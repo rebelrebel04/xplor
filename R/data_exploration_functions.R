@@ -281,7 +281,6 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, kable = FALSE) {
     dplyr::summarize_(
       .dots = setNames(
         lazyeval::interp("sum(wt, na.rm = TRUE)", wt = as.name(wt)),
-        #paste0("sum(",wt,", na.rm = TRUE)"),
         "n"
       )
     )
