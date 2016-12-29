@@ -1,0 +1,53 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+library(xplor)
+```
+
+# xplor
+
+A package of utility functions for assisting with interactive data exploration, particularly geared toward understanding record layouts of relational data (e.g., the grain of a table, mappings between primary and affiliate dimensions, extent of normalization/denormalization, etc.). NSE and SE versions of core functions are provided to facilitate interactive and programming use.
+
+## Installation
+
+Install **xplor** from github with:
+
+```{r, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("xplor/rebelrebel04")
+```
+
+## Examples
+
+### cpf
+
+This function is useful for interactive crosstabs (although the output frequency table is always in long format). 
+
+```{r}
+data(mtcars)
+cpf(mtcars, gear)
+```
+
+One of the coolest things about `cpf` is that you can pass it flag variables directly, using bare variable names:
+
+```{r}
+cpf(mtcars, carb >= 4)
+cpf(mtcars, is.na(cyl))
+```
+
+The SE version of `cpf_` is provided in the event you have variable names built up through some other means:
+
+```{r}
+vars <- names(mtcars)[grepl("^c", names(mtcars))]
+cpf_(mtcars, .dots = vars)
+```
