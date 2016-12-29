@@ -4,8 +4,12 @@ Title: Data Exploration Utilities
 Version: 0.1.0
 Author: Kurt R. Peters
 Maintainer: Kurt R. Peters <kurt.r.peters@gmail.com>
-Description: Utility functions for data exploration, with a focus on discovering and summarizing grain of data.
+Description: A package of utility functions for assisting with initial data exploration, particularly geared toward understanding record layouts of relational data (e.g., the grain of a table).
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 5.0.1
+Imports: lazyeval,
+    dplyr,
+    formattable,
+    knitr
