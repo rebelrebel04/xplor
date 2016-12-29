@@ -304,7 +304,7 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, kable = FALSE) {
     )
   tbl[nrow(tbl), names(tbl)[!(names(tbl) %in% c("n","pct","cumsum","cumpct"))]] <- "===="
   if (kable) knitr::kable(tbl) #///todo: pass ... to kable's col.names parameter
-  else tbl
+  else as.data.frame(tbl, stringsAsFactor = FALSE)
 }
 
 
