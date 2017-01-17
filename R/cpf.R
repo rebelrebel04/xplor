@@ -1,5 +1,5 @@
 
-#' Cumulative Percentile/Frequency Table
+#' \strong{C}umulative \strong{P}ercentile \strong{F}requency Table
 #'
 #' @param data A dataframe.
 #' @param ... Bare variable names defining table groupings.
@@ -21,6 +21,7 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, kable = FALSE) {
 
   tbl <-
     data %>%
+    as.data.frame() %>%              #/// this is a hack right now to make cpf work with a data.table; should rewrite cpf to use data.table by default (converting data to data.table)
     dplyr::mutate(
       one = 1
     )

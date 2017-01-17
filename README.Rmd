@@ -58,20 +58,29 @@ cpf_(mtcars, .dots = vars)
 ```
 
 
+### ss
+
+Produce a quick table of **s**ummary **s**tatistics with `ss`. The function accepts a named list of functions via the `funs` argument, with the default list covering the basics. If no variables are specified the table will summarize all numeric columns in the dataset. If `plot = TRUE` a facet-wrapped plot of histograms will be produced as a side-effect.
+
+```{r}
+ss(mtcars, plot = TRUE, kable = TRUE)
+```
+
+
 ### mapping
 
-For dimensions `x` and `y` in a dataset, there may be only one unique value of `y` associated with each unique value of `x`, or there may be multiple unique values of `y` associated with each unique value of `x`. `mapping` summarizes the association between `x` and `y` in a dataset, specified as a formula (`x ~ y`):
+For dimensions `x` and `y` in a dataset, there may be only one unique value of `y` associated with each unique value of `x`, or there may be multiple unique values of `y` associated with each unique value of `x`. `mapping` summarizes the association between `x` and `y` in a dataset, specified as a formula `x ~ y`:
 
 ```{r}
 mapping(cyl ~ gear, mtcars)
 ```
 
-In this example, there is one value of the "x" variable `cyl` that has a single unique "y" value `gear` associated with it, and two values of `cyl` that each have two unique `gear` values associated with them.
+In this example, there is one value of the "x" variable `cyl` that has a single unique "y" (`gear`) value associated with it, and two values of `cyl` that each have two unique `gear` values associated with them.
 
 
 ### findGrain
 
-Often with a new dataset, you may not know the grain of the table (i.e., the combination of dimensions at which cases are unique). This function searches through candidate dimensions and ranks the top combinations in descending amount of de-duplication (aka denormalization). Ideally, the true grain of a table would be defined by the smallest combination of dimensions that yields 0 duplicates.
+Often with a new dataset, you may not know the grain of the table (i.e., the combination of dimensions at which cases are unique). This function searches through candidate dimensions and ranks the top combinations in descending degree of de-duplication (aka normalization). In theory, the true grain of a table would be defined by the smallest combination of dimensions that yields 0 duplicates.
 
 ```{r}
 data(sleep)

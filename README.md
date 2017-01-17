@@ -77,9 +77,33 @@ cpf_(mtcars, .dots = vars)
 ## 10 ==== ==== 32     NA 100%     NA
 ```
 
+### ss
+
+Produce a quick table of **s**ummary **s**tatistics with `ss`. The function accepts a named list of functions via the `funs` argument, with the default list covering the basics. If no variables are specified the table will summarize all numeric columns in the dataset. If `plot = TRUE` a facet-wrapped plot of histograms will be produced as a side-effect.
+
+``` r
+ss(mtcars, plot = TRUE, kable = TRUE)
+```
+
+![](README-unnamed-chunk-7-1.png)
+
+| Var  |    Min|  Ptile10|    Mean|  Median|  Ptile90|     Max|      SD|    CV|
+|:-----|------:|--------:|-------:|-------:|--------:|-------:|-------:|-----:|
+| mpg  |  10.40|    14.34|   20.09|   19.20|    30.09|   33.90|    6.03|  0.30|
+| cyl  |   4.00|     4.00|    6.19|    6.00|     8.00|    8.00|    1.79|  0.29|
+| disp |  71.10|    80.61|  230.72|  196.30|   396.00|  472.00|  123.94|  0.54|
+| hp   |  52.00|    66.00|  146.69|  123.00|   243.50|  335.00|   68.56|  0.47|
+| drat |   2.76|     3.01|    3.60|    3.70|     4.21|    4.93|    0.53|  0.15|
+| wt   |   1.51|     1.96|    3.22|    3.33|     4.05|    5.42|    0.98|  0.30|
+| qsec |  14.50|    15.53|   17.85|   17.71|    19.99|   22.90|    1.79|  0.10|
+| vs   |   0.00|     0.00|    0.44|    0.00|     1.00|    1.00|    0.50|  1.15|
+| am   |   0.00|     0.00|    0.41|    0.00|     1.00|    1.00|    0.50|  1.23|
+| gear |   3.00|     3.00|    3.69|    4.00|     5.00|    5.00|    0.74|  0.20|
+| carb |   1.00|     1.00|    2.81|    2.00|     4.00|    8.00|    1.62|  0.57|
+
 ### mapping
 
-For dimensions `x` and `y` in a dataset, there may be only one unique value of `y` associated with each unique value of `x`, or there may be multiple unique values of `y` associated with each unique value of `x`. `mapping` summarizes the association between `x` and `y` in a dataset, specified as a formula (`x ~ y`):
+For dimensions `x` and `y` in a dataset, there may be only one unique value of `y` associated with each unique value of `x`, or there may be multiple unique values of `y` associated with each unique value of `x`. `mapping` summarizes the association between `x` and `y` in a dataset, specified as a formula `x ~ y`:
 
 ``` r
 mapping(cyl ~ gear, mtcars)
@@ -88,11 +112,11 @@ mapping(cyl ~ gear, mtcars)
 ## 2         2    2    67%
 ```
 
-In this example, there is one value of the "x" variable `cyl` that has a single unique "y" value `gear` associated with it, and two values of `cyl` that each have two unique `gear` values associated with them.
+In this example, there is one value of the "x" variable `cyl` that has a single unique "y" (`gear`) value associated with it, and two values of `cyl` that each have two unique `gear` values associated with them.
 
 ### findGrain
 
-Often with a new dataset, you may not know the grain of the table (i.e., the combination of dimensions at which cases are unique). This function searches through candidate dimensions and ranks the top combinations in descending amount of de-duplication (aka denormalization). Ideally, the true grain of a table would be defined by the smallest combination of dimensions that yields 0 duplicates.
+Often with a new dataset, you may not know the grain of the table (i.e., the combination of dimensions at which cases are unique). This function searches through candidate dimensions and ranks the top combinations in descending degree of de-duplication (aka normalization). In theory, the true grain of a table would be defined by the smallest combination of dimensions that yields 0 duplicates.
 
 ``` r
 data(sleep)

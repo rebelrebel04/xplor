@@ -3,7 +3,7 @@
 \name{cpf_}
 \alias{cpf}
 \alias{cpf_}
-\title{Cumulative Percentile/Frequency Table}
+\title{\strong{C}umulative \strong{P}ercentile \strong{F}requency Table}
 \usage{
 cpf_(data, ..., .dots, wt = NULL, sort = TRUE, kable = FALSE)
 
@@ -26,7 +26,7 @@ cpf(data, ..., wt = NULL, sort = TRUE, kable = FALSE)
 A dataframe or \code{kable}.
 }
 \description{
-Cumulative Percentile/Frequency Table
+\strong{C}umulative \strong{P}ercentile \strong{F}requency Table
 }
 \examples{
 data(mtcars)
