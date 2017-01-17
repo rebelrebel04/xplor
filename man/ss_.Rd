@@ -5,16 +5,16 @@
 \alias{ss_}
 \title{\strong{S}ummary \strong{S}tatistics Table}
 \usage{
-ss_(data, ..., .dots, funs = list(Min = min, Ptile10 = function(x, na.rm =
-  FALSE) deciles(x)[2], Mean = mean, Median = median, Ptile90 = function(x,
-  na.rm = FALSE) deciles(x)[10], Max = max, SD = sd, CV = function(x, na.rm =
-  FALSE) sd(x, na.rm = na.rm)/mean(x, na.rm = na.rm)), na.rm = TRUE,
-  kable = FALSE, digits = 2, plot = FALSE)
+ss_(data, ..., .dots, funs = list(Min = min, P10 = function(x, na.rm = FALSE)
+  deciles(x)[2], Mean = mean, Median = median, P90 = function(x, na.rm = FALSE)
+  deciles(x)[10], Max = max, SD = sd, CV = function(x, na.rm = FALSE) sd(x,
+  na.rm = na.rm)/mean(x, na.rm = na.rm)), na.rm = TRUE, kable = FALSE,
+  digits = 2, plot = FALSE)
 
-ss(data, ..., funs = list(Min = min, Ptile10 = function(x, na.rm = FALSE)
-  deciles(x)[2], Mean = mean, Median = median, Ptile90 = function(x, na.rm =
-  FALSE) deciles(x)[10], Max = max, SD = sd, CV = function(x, na.rm = FALSE)
-  sd(x, na.rm = na.rm)/mean(x, na.rm = na.rm)), na.rm = TRUE, kable = FALSE,
+ss(data, ..., funs = list(Min = min, P10 = function(x, na.rm = FALSE)
+  deciles(x)[2], Mean = mean, Median = median, P90 = function(x, na.rm = FALSE)
+  deciles(x)[10], Max = max, SD = sd, CV = function(x, na.rm = FALSE) sd(x,
+  na.rm = na.rm)/mean(x, na.rm = na.rm)), na.rm = TRUE, kable = FALSE,
   digits = 2, plot = FALSE)
 }
 \arguments{

@@ -1,7 +1,7 @@
 Package: xplor
 Type: Package
 Title: Data Exploration Utilities
-Version: 0.1.0
+Version: 0.1
 Author: Kurt R. Peters
 Maintainer: Kurt R. Peters <kurt.r.peters@gmail.com>
 Description: A package of utility functions for assisting with initial data exploration, particularly geared toward understanding record layouts of relational data (e.g., the grain of a table).

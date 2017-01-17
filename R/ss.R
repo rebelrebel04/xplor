@@ -22,10 +22,10 @@ ss_ <- function(
   .dots,
   funs = list(
     "Min" = min,
-    "Ptile10" = function(x, na.rm = FALSE) deciles(x)[2],
+    "P10" = function(x, na.rm = FALSE) deciles(x)[2],
     "Mean" = mean,
     "Median" = median,
-    "Ptile90" = function(x, na.rm = FALSE) deciles(x)[10],
+    "P90" = function(x, na.rm = FALSE) deciles(x)[10],
     "Max" = max,
     "SD" = sd,
     "CV" = function(x, na.rm = FALSE) sd(x, na.rm = na.rm) / mean(x, na.rm = na.rm)
@@ -86,10 +86,10 @@ ss <- function(
   ...,
   funs = list(
     "Min" = min,
-    "Ptile10" = function(x, na.rm = FALSE) deciles(x)[2],
+    "P10" = function(x, na.rm = FALSE) deciles(x)[2],
     "Mean" = mean,
     "Median" = median,
-    "Ptile90" = function(x, na.rm = FALSE) deciles(x)[10],
+    "P90" = function(x, na.rm = FALSE) deciles(x)[10],
     "Max" = max,
     "SD" = sd,
     "CV" = function(x, na.rm = FALSE) sd(x, na.rm = na.rm) / mean(x, na.rm = na.rm)
