@@ -27,31 +27,46 @@ ss_ <- function(
 
   .dots <- lazyeval::all_dots(.dots, ..., all_named = TRUE)
 
-  # convert data.tables
-  data <- as.data.frame(data, stringsAsFactors = FALSE)
+  # convert data.tables?
+  # data <- as.data.frame(data, stringsAsFactors = FALSE)
 
   # Select requested columns if specified -- otherwise will use all numeric columns in data
   if (length(.dots) > 0) {
-    data <- as.data.frame(data[, names(.dots)])
-    names(data) <- names(.dots)
+    data <-
+      data %>%
+      dplyr::select_(.dots = c(unlist(dplyr::groups(data)), names(.dots)))
   }
 
   # Get indices of numeric columns - only type funs apply to
   numerics <- which(vapply(data, is.numeric, logical(1)))
+  # Exclude grouping variables in the event they are of type numeric
+  numerics <- numerics[!(numerics %in% which(names(data) %in% unlist(dplyr::groups(data))))]
 
   tbl <- tibble::tibble()
   for(i in seq_along(numerics)) {
-    summaries <- tibble::as_tibble(lapply(funs, function(f) f(data[, numerics[i]], na.rm = TRUE)))
-    names(summaries) <- names(funs)
+    summaries <-
+      data %>%
+      # Note: data will carry any group_by attributes here if it was passed in with them
+      dplyr::summarize_(
+        .dots = setNames(
+          lapply(summary_funs(), function(f) lazyeval::interp(f, x = as.name(names(data)[numerics[i]]))),
+          nm = names(summary_funs())
+        )
+      )
     tbl <- dplyr::bind_rows(tbl, summaries)
   }
 
   # Apply rounding
-  tbl <- round(tbl, digits)
+  tbl[, names(funs)] <- round(tbl[, names(funs)], digits)
 
-  # Add variable column at left of summary table
+  # Add grouping and variable columns at left of summary table
   tbl$Variable <- names(data)[numerics]
-  tbl <- dplyr::bind_cols(tbl[, ncol(tbl)], tbl[, -ncol(tbl)])
+  tbl <-
+    dplyr::bind_cols(
+      dplyr::select_(tbl, .dots = c(unlist(dplyr::groups(data)), "Variable")),
+      dplyr::select_(tbl, .dots = paste0("-", c(unlist(dplyr::groups(data)), "Variable")))
+    ) %>%
+    dplyr::arrange_(.dots = c(unlist(dplyr::groups(data))))
 
   if (plot) {
     p <-
@@ -60,7 +75,8 @@ ss_ <- function(
       ggplot2::ggplot(ggplot2::aes(x = value)) +
       ggplot2::geom_histogram(bins = 30) +
       ggplot2::xlab("") + ggplot2::ylab("") +
-      ggplot2::facet_wrap(~variable, scales = "free")
+      ggplot2::facet_wrap(~variable, scales = "free") +
+      ggplot2::theme_bw()
     plot(p)
   }
 
@@ -88,14 +104,14 @@ ss <- function(
 
 summary_funs <- function() {
   list(
-    "Min" = min,
-    "P10" = function(x, ...) deciles(x, na.rm = TRUE)[2],
-    "Mean" = mean,
-    "Median" = median,
-    "P90" = function(x, ...) deciles(x, na.rm = TRUE)[10],
-    "Max" = max,
-    "SD" = sd,
-    "CV" = function(x, ...) sd(x, na.rm = TRUE) / mean(x, na.rm = TRUE),
-    "NAs" = function(x, ...) sum(is.na(x))
+    "Min" = ~min(x, na.rm = TRUE),
+    "P10" = ~deciles(x, na.rm = TRUE)[2],
+    "Mean" = ~mean(x, na.rm = TRUE),
+    "Median" = ~median(x, na.rm = TRUE),
+    "P90" = ~deciles(x, na.rm = TRUE)[10],
+    "Max" = ~max(x, na.rm = TRUE),
+    "SD" = ~sd(x, na.rm = TRUE),
+    "CV" = ~sd(x, na.rm = TRUE) / mean(x, na.rm = TRUE),
+    "NAs" = ~sum(is.na(x))
   )
 }
