@@ -2,13 +2,14 @@
 output: github_document
 ---
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
   collapse = TRUE,
   comment = "##",
   fig.path = "README-"
 )
+library(dplyr)
 library(xplor)
 ```
 
@@ -60,12 +61,19 @@ cpf_(mtcars, .dots = vars)
 
 ### ss
 
-Produce a quick table of **s**ummary **s**tatistics with `ss`. The function accepts a named list of functions via the `funs` argument, with the default list covering the basics. If no variables are specified the table will summarize all numeric columns in the dataset. If `plot = TRUE` a facet-wrapped plot of histograms will be produced as a side-effect.
+Produce a quick table of **s**ummary **s**tatistics with `ss`. The function accepts a named list of functions (specified as formulas) via the `funs` argument, with the default list covering the basics. If no variables are specified the table will summarize all numeric columns in the dataset. If `plot = TRUE` a facet-wrapped plot of histograms will be produced as a side-effect.
 
 ```{r}
 ss(mtcars, plot = TRUE, kable = TRUE)
 ```
 
+A grouped dataframe can be passed to produce a dimensional summary table:
+
+```{r}
+mtcars %>% 
+  group_by(cyl) %>% 
+  ss(kable = TRUE)
+```
 
 ### mapping
 
