@@ -49,8 +49,8 @@ ss_ <- function(
       # Note: data will carry any group_by attributes here if it was passed in with them
       dplyr::summarize_(
         .dots = setNames(
-          lapply(summary_funs(), function(f) lazyeval::interp(f, x = as.name(names(data)[numerics[i]]))),
-          nm = names(summary_funs())
+          lapply(funs, function(f) lazyeval::interp(f, x = as.name(names(data)[numerics[i]]))),
+          nm = names(funs)
         )
       )
     tbl <- dplyr::bind_rows(tbl, summaries)

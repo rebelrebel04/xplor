@@ -76,6 +76,21 @@ mtcars %>%
   ss(kable = TRUE)
 ```
 
+Pass a custom list of summary functions as formulas on `x`:
+
+```{r}
+mtcars %>% 
+  ss(
+    funs = list(
+      "variance" = ~var(x, na.rm = TRUE), 
+      "skewness" = ~moments::skewness(x, na.rm = TRUE), 
+      "kurtosis" = ~moments::kurtosis(x, na.rm = TRUE)
+    ), 
+    kable = TRUE
+  )
+```
+
+
 ### mapping
 
 For dimensions `x` and `y` in a dataset, there may be only one unique value of `y` associated with each unique value of `x`, or there may be multiple unique values of `y` associated with each unique value of `x`. `mapping` summarizes the association between `x` and `y` in a dataset, specified as a formula `x ~ y`:

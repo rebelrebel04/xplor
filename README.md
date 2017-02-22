@@ -143,6 +143,34 @@ mtcars %>%
 |    8| vs       |   14|    0|    3.00|    3.00|    3.29|    3.00|    4.40|    5.00|   0.73|  0.22|
 |    8| carb     |   14|    0|    2.00|    2.00|    3.50|    3.50|    4.00|    8.00|   1.56|  0.44|
 
+Pass a custom list of summary functions as formulas on `x`:
+
+``` r
+mtcars %>% 
+  ss(
+    funs = list(
+      "variance" = ~var(x, na.rm = TRUE), 
+      "skewness" = ~moments::skewness(x, na.rm = TRUE), 
+      "kurtosis" = ~moments::kurtosis(x, na.rm = TRUE)
+    ), 
+    kable = TRUE
+  )
+```
+
+| Variable |  variance|  skewness|  kurtosis|
+|:---------|---------:|---------:|---------:|
+| mpg      |     36.32|      0.64|      2.80|
+| cyl      |      3.19|     -0.18|      1.32|
+| disp     |  15360.80|      0.40|      1.91|
+| hp       |   4700.87|      0.76|      3.05|
+| drat     |      0.29|      0.28|      2.44|
+| wt       |      0.96|      0.44|      3.17|
+| qsec     |      3.19|      0.39|      3.55|
+| vs       |      0.25|      0.25|      1.06|
+| am       |      0.25|      0.38|      1.15|
+| gear     |      0.54|      0.55|      2.06|
+| carb     |      2.61|      1.10|      4.54|
+
 ### mapping
 
 For dimensions `x` and `y` in a dataset, there may be only one unique value of `y` associated with each unique value of `x`, or there may be multiple unique values of `y` associated with each unique value of `x`. `mapping` summarizes the association between `x` and `y` in a dataset, specified as a formula `x ~ y`:
