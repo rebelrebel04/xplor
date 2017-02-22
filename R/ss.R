@@ -8,7 +8,6 @@
 #' @param ... Bare names of numeric variables to summarize (NSE); if empty will summarize all numeric columns in \code{data}.
 #' @param .dots Quoted names of numeric variables to summarize (SE).
 #' @param funs List of summary functions (each must have a signature with first argument being a numeric vector and including a named \code{na.rm} argument).
-#' @param na.rm Logical, whether to omit \code{NA} values from vectors when computing summary functions.
 #' @param kable Logical, whether to return a \code{kable} for rendering in Rmarkdown.
 #' @param digits Number of digits to print after decimal.
 #' @param plot Logical, whether to plot (as a side-effect) a facet-wrapped set of histograms for all summarized variables.
@@ -20,17 +19,7 @@ ss_ <- function(
   data,
   ...,
   .dots,
-  funs = list(
-    "Min" = min,
-    "P10" = function(x, na.rm = FALSE) deciles(x)[2],
-    "Mean" = mean,
-    "Median" = median,
-    "P90" = function(x, na.rm = FALSE) deciles(x)[10],
-    "Max" = max,
-    "SD" = sd,
-    "CV" = function(x, na.rm = FALSE) sd(x, na.rm = na.rm) / mean(x, na.rm = na.rm)
-  ),
-  na.rm = TRUE,
+  funs = summary_funs(),
   kable = FALSE,
   digits = 2,
   plot = FALSE
@@ -38,18 +27,21 @@ ss_ <- function(
 
   .dots <- lazyeval::all_dots(.dots, ..., all_named = TRUE)
 
-  #///handle data.tables?
-  #data <- as.data.frame(data, stringsAsFactors = FALSE)
+  # convert data.tables
+  data <- as.data.frame(data, stringsAsFactors = FALSE)
 
   # Select requested columns if specified -- otherwise will use all numeric columns in data
-  if (length(.dots) > 0) data <- data[, names(.dots)]
+  if (length(.dots) > 0) {
+    data <- as.data.frame(data[, names(.dots)])
+    names(data) <- names(.dots)
+  }
 
   # Get indices of numeric columns - only type funs apply to
   numerics <- which(vapply(data, is.numeric, logical(1)))
 
   tbl <- tibble::tibble()
   for(i in seq_along(numerics)) {
-    summaries <- tibble::as_tibble(lapply(funs, function(f) f(data[, numerics[i]], na.rm = na.rm)))
+    summaries <- tibble::as_tibble(lapply(funs, function(f) f(data[, numerics[i]], na.rm = TRUE)))
     names(summaries) <- names(funs)
     tbl <- dplyr::bind_rows(tbl, summaries)
   }
@@ -58,7 +50,7 @@ ss_ <- function(
   tbl <- round(tbl, digits)
 
   # Add variable column at left of summary table
-  tbl$Var <- names(data)[numerics]
+  tbl$Variable <- names(data)[numerics]
   tbl <- dplyr::bind_cols(tbl[, ncol(tbl)], tbl[, -ncol(tbl)])
 
   if (plot) {
@@ -84,22 +76,26 @@ ss_ <- function(
 ss <- function(
   data,
   ...,
-  funs = list(
-    "Min" = min,
-    "P10" = function(x, na.rm = FALSE) deciles(x)[2],
-    "Mean" = mean,
-    "Median" = median,
-    "P90" = function(x, na.rm = FALSE) deciles(x)[10],
-    "Max" = max,
-    "SD" = sd,
-    "CV" = function(x, na.rm = FALSE) sd(x, na.rm = na.rm) / mean(x, na.rm = na.rm)
-  ),
-  na.rm = TRUE,
+  funs = summary_funs(),
   kable = FALSE,
   digits = 2,
   plot = FALSE
 ) {
-  ss_(data, .dots = lazyeval::lazy_dots(...), funs = funs, na.rm = na.rm, kable = kable, digits = digits, plot = plot)
+  ss_(data, .dots = lazyeval::lazy_dots(...), funs = funs, kable = kable, digits = digits, plot = plot)
 }
 
 
+
+summary_funs <- function() {
+  list(
+    "Min" = min,
+    "P10" = function(x, ...) deciles(x, na.rm = TRUE)[2],
+    "Mean" = mean,
+    "Median" = median,
+    "P90" = function(x, ...) deciles(x, na.rm = TRUE)[10],
+    "Max" = max,
+    "SD" = sd,
+    "CV" = function(x, ...) sd(x, na.rm = TRUE) / mean(x, na.rm = TRUE),
+    "NAs" = function(x, ...) sum(is.na(x))
+  )
+}

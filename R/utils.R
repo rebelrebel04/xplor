@@ -11,16 +11,16 @@
 #' data(mtcars)
 #' deciles(mtcars$hp)
 #' icosatiles(mtcars$disp)
-deciles <- function(x) {
-  quantile(x, seq(0, 1, .1))
+deciles <- function(x, na.rm = TRUE) {
+  quantile(x, seq(0, 1, .1), na.rm = na.rm)
 }
 
 
 #' @export
 #' @importFrom magrittr %>%
 #' @rdname deciles
-icosatiles <- function(x) {
-  quantile(x, seq(0, 1, .05))
+icosatiles <- function(x, na.rm = TRUE) {
+  quantile(x, seq(0, 1, .05), na.rm = na.rm)
 }
 
 
