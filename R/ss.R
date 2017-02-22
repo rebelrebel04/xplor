@@ -104,6 +104,8 @@ ss <- function(
 
 summary_funs <- function() {
   list(
+    "N" = ~n(),
+    "NAs" = ~sum(is.na(x)),
     "Min" = ~min(x, na.rm = TRUE),
     "P10" = ~deciles(x, na.rm = TRUE)[2],
     "Mean" = ~mean(x, na.rm = TRUE),
@@ -111,7 +113,6 @@ summary_funs <- function() {
     "P90" = ~deciles(x, na.rm = TRUE)[10],
     "Max" = ~max(x, na.rm = TRUE),
     "SD" = ~sd(x, na.rm = TRUE),
-    "CV" = ~sd(x, na.rm = TRUE) / mean(x, na.rm = TRUE),
-    "NAs" = ~sum(is.na(x))
+    "CV" = ~sd(x, na.rm = TRUE) / mean(x, na.rm = TRUE)
   )
 }

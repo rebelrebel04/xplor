@@ -67,9 +67,10 @@ Produce a quick table of **s**ummary **s**tatistics with `ss`. The function acce
 ss(mtcars, plot = TRUE, kable = TRUE)
 ```
 
-A grouped dataframe can be passed to produce a dimensional summary table:
+A `dplyr`-grouped dataframe can be passed to produce a dimensional summary table:
 
 ```{r}
+library(dplyr)
 mtcars %>% 
   group_by(cyl) %>% 
   ss(kable = TRUE)
