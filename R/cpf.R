@@ -2,9 +2,9 @@
 #' \strong{C}umulative \strong{P}ercentile \strong{F}requency Table
 #'
 #' @param data A dataframe.
-#' @param ... Bare variable names defining table groupings.
-#' @param .dots Quoted variable names defining table groupings.
-#' @param wt (Optional) quoted variable name to use for weighting frequencies.
+#' @param ... Variable names defining table groupings.
+#' @param .dots Vector of variable names defining table groupings.
+#' @param wt (Optional, character) variable name to use for weighting frequencies.
 #' @param sort Logical, whether to sort table in descending frequency.
 #' @param kable Logical, whether to format table for Rmarkdown.
 #'
@@ -15,45 +15,31 @@
 #' @examples
 #' data(mtcars)
 #' cpf(mtcars, cyl, gear)
-cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, kable = FALSE) {
-
-  #if ("n" %in% names(data)) stop("Dataset cannot contain a variable named 'n'")
+cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, chi_square = FALSE, kable = FALSE) {
 
   .dots <- lazyeval::all_dots(.dots, ..., all_named = TRUE)
 
-  tbl <-
+  if (!is.null(wt)) wt <- as.name(wt)
+
+  tbl.0 <-
     data %>%
-    as.data.frame(stringsAsFactors = FALSE) %>%
-    dplyr::mutate(
-      one = 1
-    )
+    #//// need to convert data.table here? as.tibble()...
+    # This handles a character "wt" -- otherwise for bare variable need to pass substitute(wt)
+    dplyr::count_(vars = .dots, wt = wt, sort = sort)
 
-  if (is.null(wt)) wt <- "one"
-
-  tbl <-
-    tbl %>%
-    dplyr::group_by_(.dots = .dots) %>%
-    dplyr::summarize_(
-      .dots = setNames(
-        lazyeval::interp("sum(wt, na.rm = TRUE)", wt = as.name(wt)),
-        "n"
-      )
-    )
-
-  # tbl <-
-  #   data %>%
-  #   #//// need to convert data.table here? as.tibble()...
-  #   # This version handles a character "wt" -- otherwise for bare variable need to pass substitute(wt)
-  #   dplyr::count_(vars = .dots, wt = as.name(wt), sort = sort)
-
-  if (sort) tbl <- dplyr::arrange(tbl, dplyr::desc(n))
-
-  tot <- tibble::tibble(n = sum(tbl$n, na.rm = TRUE))
+  tot <- tibble::tibble(n = sum(tbl.0$n, na.rm = TRUE))
   tot$pct <- tot$n / tot$n
 
-  tbl$cumsum <- cumsum(tbl$n)
-  tbl$pct <- tbl$n / tot$n
-  tbl$cumpct <- cumsum(tbl$pct)
+  tbl <-
+    tbl.0 %>%
+    mutate(
+      cumsum = cumsum(n),
+      pct = n / tot$n,
+      cumpct = cumsum(pct)
+    )
+  # tbl$cumsum <- cumsum(tbl$n)
+  # tbl$pct <- tbl$n / tot$n
+  # tbl$cumpct <- cumsum(tbl$pct)
 
   tbl <-
     dplyr::bind_rows(tbl, tot) %>%
@@ -65,6 +51,20 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, kable = FALSE) {
     )
   tbl[nrow(tbl), names(.dots)] <- "===="
 
+
+  # perform chi-square test
+  if (chi_square && length(.dots) > 1) {
+    xtbl <- summary(xtabs(n~., data = tbl.0, na.action = na.pass, exclude = NULL))
+    cat("Test for independence of all factors:\n")
+    ch <- xtbl$statistic
+    cat("\tChisq = ", format(round(ch, max(0, digits - log10(ch)))),
+        ", df = ", xtbl$parameter, ", p-value = ", format.pval(xtbl$p.value,
+                                                            digits = 3, eps = 0), "\n", sep = "")
+    if (!xtbl$approx.ok)
+      cat("\tNote: Chi-square approximation may be incorrect\n")
+  }
+
+
   if (kable) knitr::kable(tbl) #///todo: pass ... to kable's col.names parameter
   else as.data.frame(tbl, stringsAsFactor = FALSE)
 }
@@ -73,8 +73,8 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, kable = FALSE) {
 
 #' @rdname cpf_
 #' @export
-cpf <- function(data, ..., wt = NULL, sort = TRUE, kable = FALSE) {
-  cpf_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, kable = kable)
+cpf <- function(data, ..., wt = NULL, sort = TRUE, chi_square = FALSE, kable = FALSE) {
+  cpf_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, chi_square = chi_square, kable = kable)
 }
 
 

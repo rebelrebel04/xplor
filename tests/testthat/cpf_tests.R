@@ -1,16 +1,22 @@
 data(mtcars)
 cpf(mtcars, gear, cyl)
 cpf(mtcars, gear, cyl, kable = TRUE)
-cpf(mtcars, gear, cyl, drop = FALSE, kable = TRUE)
 cpf(mtcars, gear, cyl, chi_square = TRUE, kable = TRUE)
 cpf(mtcars, gear, cyl, carb, chi_square = TRUE, kable = TRUE)
 
+cpf(mtcars, gear, wt = "carb")
+
+cpf(mtcars, gear, cyl)
+cpf(mtcars, gear, cyl, wt = "carb")
 cpf(mtcars, gear, cyl, chi_square = TRUE)
 cpf(mtcars, gear, cyl, wt = "carb", chi_square = TRUE)
 
 cpf_(mtcars, "gear", .dots = c("cyl","carb"))
+cpf_(mtcars, "gear", .dots = c("cyl","carb"), wt = "wt")
 
 cpf(mtcars, foo = gear > 4, cyl)
+cpf(mtcars, foo = gear > 4, cyl, sort = FALSE)
+cpf(mtcars, foo = gear > 4, cyl, chi_square = TRUE)
 
 
 data("Theoph")
@@ -70,6 +76,12 @@ C.0[
 cpf(C.0, MailStatusTypeCode, EmailStatusTypeCode)
 
 cpf(C.0, tx1_type, tx2_type)
+
+cpf(C.0, tx1_QTY_S + tx1_QTY_R == tx1_ic_Quantity)
+cpf(C.0, tx2_QTY_S + tx2_QTY_R == tx2_ic_Quantity)
+
+cpf(C.0, tx1_channelType, tx2_channelType, chi_square = TRUE)
+
 table(C.0$tx2_type, useNA = "ifany")
 
 cpf(C.0, inUS > 0)
