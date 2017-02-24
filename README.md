@@ -1,13 +1,8 @@
 
-``` r
-cat("foo")
-## foo
-```
-
 xplor
 =====
 
-A package of utility functions for assisting with interactive data exploration, particularly geared toward understanding record layouts of relational data (e.g., the grain of a table, mappings between primary and affiliate dimensions, extent of normalization/denormalization, etc.). NSE and SE versions of core functions are provided to facilitate interactive and programming use.
+A package of lightweight utility functions for assisting with interactive data exploration, particularly geared toward understanding record layouts of relational data (e.g., the grain of a table, mappings between primary and affiliate dimensions, extent of normalization/denormalization, etc.). NSE and SE versions of core functions are provided to facilitate interactive and programming use. Functions are designed to work well with `dplyr`.
 
 Installation
 ------------
@@ -24,7 +19,7 @@ Core Functions
 
 ### cpf
 
-`cpf` provides a quick frequency/percentile summary table for a dataset by one or more grouping variables. The most common use case is interactive crosstabs (though note that the output frequency table is always in long format).
+Create fast **c**umulative **p**ercentile/**f**requency tables with `cpf`. The most common use case is interactive crosstabs (though note that the output frequency table is always in long format).
 
 ``` r
 data(mtcars)
@@ -49,7 +44,7 @@ cpf(mtcars, gear, kable = TRUE)
 | 5    |    5|      32|   16%|    100%|
 | ==== |   32|      NA|  100%|      NA|
 
-A nice feature is that you can pass `cpf` computed variables using bare variable names:
+A nice feature is that you can pass `cpf` computed variables using bare variable names; optionally provide descriptive names for the table columns:
 
 ``` r
 cpf(mtcars, carb >= 4)
@@ -58,11 +53,49 @@ cpf(mtcars, carb >= 4)
 ## 2      TRUE 12     32  38%   100%
 ## 3      ==== 32     NA 100%     NA
 
-cpf(mtcars, is.na(cyl))
-##   is.na(cyl)  n cumsum  pct cumpct
-## 1      FALSE 32     32 100%   100%
-## 2       ==== 32     NA 100%     NA
+cpf(mtcars, has_cyl = !is.na(cyl))
+##   has_cyl  n cumsum  pct cumpct
+## 1    TRUE 32     32 100%   100%
+## 2    ==== 32     NA 100%     NA
 ```
+
+Optionally specify a weighting variable for frequencies:
+
+``` r
+cpf(mtcars, carb, wt = "cyl")
+##   carb   n cumsum  pct cumpct
+## 1    4  72     72  36%    36%
+## 2    2  56    128  28%    65%
+## 3    1  32    160  16%    81%
+## 4    3  24    184  12%    93%
+## 5    8   8    192   4%    97%
+## 6    6   6    198   3%   100%
+## 7 ==== 198     NA 100%     NA
+```
+
+A chi-square test can be requestd for frequency tables that have two or more dimensions:
+
+``` r
+cpf(mtcars, cyl > 4, hp > 123, chi_square = TRUE)
+## Test for independence of all factors:
+##  Chisq = 15, df = 1, p-value = 0.00012
+##   cyl > 4 hp > 123  n cumsum  pct cumpct
+## 1    TRUE     TRUE 15     15  47%    47%
+## 2   FALSE    FALSE 11     11  34%    34%
+## 3    TRUE    FALSE  6     21  19%    66%
+## 4    ====     ==== 32     NA 100%     NA
+```
+
+`cpf` returns a dataframe containing the frequency table, which can be useful for downstream processing or plotting:
+
+``` r
+cpf(mtcars, gear, cyl, margin = FALSE) %>% 
+  ggplot2::ggplot(ggplot2::aes(x = gear, y = cyl, fill = pct)) +
+  ggplot2::geom_tile() +
+  ggplot2::scale_fill_gradient(label = scales::percent)
+```
+
+![](README-unnamed-chunk-8-1.png)
 
 The SE version of `cpf_` is provided in the event you have variable names built up through some other means:
 
@@ -71,14 +104,14 @@ vars <- names(mtcars)[grepl("^c", names(mtcars))]
 cpf_(mtcars, .dots = vars)
 ##     cyl carb  n cumsum  pct cumpct
 ## 1     4    2  6      6  19%    19%
-## 2     8    4  6     12  19%    38%
-## 3     4    1  5     17  16%    53%
-## 4     6    4  4     21  12%    66%
-## 5     8    2  4     25  12%    78%
-## 6     8    3  3     28   9%    88%
-## 7     6    1  2     30   6%    94%
-## 8     6    6  1     31   3%    97%
-## 9     8    8  1     32   3%   100%
+## 2     8    4  6      6  19%    19%
+## 3     4    1  5     11  16%    34%
+## 4     6    4  4      4  12%    12%
+## 5     8    2  4     10  12%    31%
+## 6     8    3  3     13   9%    41%
+## 7     6    1  2      6   6%    19%
+## 8     6    6  1      7   3%    22%
+## 9     8    8  1     14   3%    44%
 ## 10 ==== ==== 32     NA 100%     NA
 ```
 
@@ -90,7 +123,7 @@ Produce a quick table of **s**ummary **s**tatistics with `ss`. The function acce
 ss(mtcars, plot = TRUE, kable = TRUE)
 ```
 
-![](README-unnamed-chunk-8-1.png)
+![](README-unnamed-chunk-10-1.png)
 
 | Variable |    N|  NAs|    Min|    P10|    Mean|  Median|     P90|     Max|      SD|    CV|
 |:---------|----:|----:|------:|------:|-------:|-------:|-------:|-------:|-------:|-----:|

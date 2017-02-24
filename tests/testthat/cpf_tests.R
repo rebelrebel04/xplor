@@ -18,6 +18,9 @@ cpf(mtcars, foo = gear > 4, cyl)
 cpf(mtcars, foo = gear > 4, cyl, sort = FALSE)
 cpf(mtcars, foo = gear > 4, cyl, chi_square = TRUE)
 
+cpf(mtcars, gear, cyl, margin = TRUE)
+cpf(mtcars, gear, cyl, margin = FALSE)
+
 
 data("Theoph")
 cpf_(Theoph, "Dose")

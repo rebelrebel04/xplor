@@ -15,7 +15,7 @@
 #' @examples
 #' data(mtcars)
 #' cpf(mtcars, cyl, gear)
-cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, chi_square = FALSE, kable = FALSE) {
+cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE, chi_square = FALSE, kable = FALSE) {
 
   .dots <- lazyeval::all_dots(.dots, ..., all_named = TRUE)
 
@@ -37,27 +37,29 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, chi_square = FALSE, k
       pct = n / tot$n,
       cumpct = cumsum(pct)
     )
-  # tbl$cumsum <- cumsum(tbl$n)
-  # tbl$pct <- tbl$n / tot$n
-  # tbl$cumpct <- cumsum(tbl$pct)
+
+  if (margin)
+    tbl <- dplyr::bind_rows(tbl, tot)
 
   tbl <-
-    dplyr::bind_rows(tbl, tot) %>%
+    tbl %>%
     dplyr::mutate(
       n = formattable::comma(n, digits = 0),
       cumsum = formattable::comma(cumsum, digits = 0),
       pct = formattable::percent(pct, digits = 0),
       cumpct = formattable::percent(cumpct, digits = 0)
     )
-  tbl[nrow(tbl), names(.dots)] <- "===="
+
+  if (margin)
+    tbl[nrow(tbl), names(.dots)] <- "===="
 
 
-  # perform chi-square test
+  # Perform chi-square test
   if (chi_square && length(.dots) > 1) {
     xtbl <- summary(xtabs(n~., data = tbl.0, na.action = na.pass, exclude = NULL))
     cat("Test for independence of all factors:\n")
     ch <- xtbl$statistic
-    cat("\tChisq = ", format(round(ch, max(0, digits - log10(ch)))),
+    cat("\tChisq = ", format(round(ch, max(0, 1 - log10(ch)))),
         ", df = ", xtbl$parameter, ", p-value = ", format.pval(xtbl$p.value,
                                                             digits = 3, eps = 0), "\n", sep = "")
     if (!xtbl$approx.ok)
@@ -73,8 +75,8 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, chi_square = FALSE, k
 
 #' @rdname cpf_
 #' @export
-cpf <- function(data, ..., wt = NULL, sort = TRUE, chi_square = FALSE, kable = FALSE) {
-  cpf_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, chi_square = chi_square, kable = kable)
+cpf <- function(data, ..., wt = NULL, sort = TRUE, margin = TRUE, chi_square = FALSE, kable = FALSE) {
+  cpf_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, margin = margin, chi_square = chi_square, kable = kable)
 }
 
 

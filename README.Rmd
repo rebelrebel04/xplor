@@ -15,7 +15,7 @@ library(xplor)
 
 # xplor
 
-A package of utility functions for assisting with interactive data exploration, particularly geared toward understanding record layouts of relational data (e.g., the grain of a table, mappings between primary and affiliate dimensions, extent of normalization/denormalization, etc.). NSE and SE versions of core functions are provided to facilitate interactive and programming use.
+A package of lightweight utility functions for assisting with interactive data exploration, particularly geared toward understanding record layouts of relational data (e.g., the grain of a table, mappings between primary and affiliate dimensions, extent of normalization/denormalization, etc.). NSE and SE versions of core functions are provided to facilitate interactive and programming use. Functions are designed to work well with `dplyr`.
 
 ## Installation
 
@@ -30,7 +30,7 @@ devtools::install_github("xplor/rebelrebel04")
 
 ### cpf
 
-`cpf` provides a quick frequency/percentile summary table for a dataset by one or more grouping variables. The most common use case is interactive crosstabs (though note that the output frequency table is always in long format). 
+Create **c**umulative **p**ercentile/**f**requency tables with `cpf`. The most common use case is interactive crosstabs (though note that the output frequency table is always in long format).
 
 ```{r}
 data(mtcars)
@@ -43,12 +43,33 @@ You can also request a lightly-formatted `kable` when running `cpf` within an Rm
 cpf(mtcars, gear, kable = TRUE)
 ```
 
-A nice feature is that you can pass `cpf` computed variables using bare variable names:
+A nice feature is that you can pass `cpf` computed variables using bare variable names; optionally provide descriptive names for the table columns:
 
 ```{r}
 cpf(mtcars, carb >= 4)
 
-cpf(mtcars, is.na(cyl))
+cpf(mtcars, has_cyl = !is.na(cyl))
+```
+
+Optionally specify a weighting variable for frequencies:
+
+```{r}
+cpf(mtcars, carb, wt = "cyl")
+```
+
+A chi-square test can be requestd for frequency tables that have two or more dimensions:
+
+```{r}
+cpf(mtcars, cyl > 4, hp > 123, chi_square = TRUE)
+```
+
+`cpf` returns a dataframe containing the frequency table, which can be useful for downstream processing or plotting:
+
+```{r}
+cpf(mtcars, gear, cyl, margin = FALSE) %>% 
+  ggplot2::ggplot(ggplot2::aes(x = gear, y = cyl, fill = pct)) +
+  ggplot2::geom_tile() +
+  ggplot2::scale_fill_gradient(label = scales::percent)
 ```
 
 The SE version of `cpf_` is provided in the event you have variable names built up through some other means:
