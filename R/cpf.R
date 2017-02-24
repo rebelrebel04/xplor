@@ -17,15 +17,19 @@
 #' cpf(mtcars, cyl, gear)
 cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, kable = FALSE) {
 
+  #if ("n" %in% names(data)) stop("Dataset cannot contain a variable named 'n'")
+
   .dots <- lazyeval::all_dots(.dots, ..., all_named = TRUE)
 
   tbl <-
     data %>%
-    as.data.frame() %>%              #/// this is a hack right now to make cpf work with a data.table; should rewrite cpf to use data.table by default (converting data to data.table)
+    as.data.frame(stringsAsFactors = FALSE) %>%
     dplyr::mutate(
       one = 1
     )
+
   if (is.null(wt)) wt <- "one"
+
   tbl <-
     tbl %>%
     dplyr::group_by_(.dots = .dots) %>%
@@ -36,13 +40,19 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, kable = FALSE) {
       )
     )
 
-  tot <- data.frame(n = sum(tbl$n, na.rm = TRUE))
-  tot$pct <- tot$n / tot$n
+  # tbl <-
+  #   data %>%
+  #   #//// need to convert data.table here? as.tibble()...
+  #   # This version handles a character "wt" -- otherwise for bare variable need to pass substitute(wt)
+  #   dplyr::count_(vars = .dots, wt = as.name(wt), sort = sort)
 
   if (sort) tbl <- dplyr::arrange(tbl, dplyr::desc(n))
 
+  tot <- tibble::tibble(n = sum(tbl$n, na.rm = TRUE))
+  tot$pct <- tot$n / tot$n
+
   tbl$cumsum <- cumsum(tbl$n)
-  tbl$pct <- tbl$n / sum(tbl$n, na.rm = TRUE)
+  tbl$pct <- tbl$n / tot$n
   tbl$cumpct <- cumsum(tbl$pct)
 
   tbl <-
@@ -53,7 +63,8 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, kable = FALSE) {
       pct = formattable::percent(pct, digits = 0),
       cumpct = formattable::percent(cumpct, digits = 0)
     )
-  tbl[nrow(tbl), names(tbl)[!(names(tbl) %in% c("n","pct","cumsum","cumpct"))]] <- "===="
+  tbl[nrow(tbl), names(.dots)] <- "===="
+
   if (kable) knitr::kable(tbl) #///todo: pass ... to kable's col.names parameter
   else as.data.frame(tbl, stringsAsFactor = FALSE)
 }

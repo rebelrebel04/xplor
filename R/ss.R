@@ -7,7 +7,7 @@
 #' @param data A dataframe.
 #' @param ... Bare names of numeric variables to summarize (NSE); if empty will summarize all numeric columns in \code{data}.
 #' @param .dots Quoted names of numeric variables to summarize (SE).
-#' @param funs List of summary functions (each must have a signature with first argument being a numeric vector and including a named \code{na.rm} argument).
+#' @param funs List of summary functions defined as formulas on \code{x}.
 #' @param kable Logical, whether to return a \code{kable} for rendering in Rmarkdown.
 #' @param digits Number of digits to print after decimal.
 #' @param plot Logical, whether to plot (as a side-effect) a facet-wrapped set of histograms for all summarized variables.
@@ -53,6 +53,7 @@ ss_ <- function(
           nm = names(funs)
         )
       )
+    summaries$Variable <- names(data[numerics])[i]
     tbl <- dplyr::bind_rows(tbl, summaries)
   }
 
@@ -60,7 +61,6 @@ ss_ <- function(
   tbl[, names(funs)] <- round(tbl[, names(funs)], digits)
 
   # Add grouping and variable columns at left of summary table
-  tbl$Variable <- names(data)[numerics]
   tbl <-
     dplyr::bind_cols(
       dplyr::select_(tbl, .dots = c(unlist(dplyr::groups(data)), "Variable")),
