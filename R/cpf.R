@@ -6,6 +6,8 @@
 #' @param .dots Vector of variable names defining table groupings.
 #' @param wt (Optional, character) variable name to use for weighting frequencies.
 #' @param sort Logical, whether to sort table in descending frequency.
+#' @param margin Logical, whether to add total row to end of table.
+#' @param chi_square Logical, whether to print chi-square test (has no effect on one-dimensional tables).
 #' @param kable Logical, whether to format table for Rmarkdown.
 #'
 #' @return A dataframe or \code{kable}.
@@ -24,15 +26,22 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE, chi_sq
   tbl.0 <-
     data %>%
     #//// need to convert data.table here? as.tibble()...
+    tibble::as_tibble() %>%
     # This handles a character "wt" -- otherwise for bare variable need to pass substitute(wt)
     dplyr::count_(vars = .dots, wt = wt, sort = sort)
 
   tot <- tibble::tibble(n = sum(tbl.0$n, na.rm = TRUE))
   tot$pct <- tot$n / tot$n
 
+  # tbl <- tbl.0
+  # tbl$cumsum <- cumsum(tbl$n)
+  # tbl$pct <- tbl$n / tot$n
+  # tbl$cumpct = cumsum(tbl$pct)
+
   tbl <-
     tbl.0 %>%
-    mutate(
+    dplyr::ungroup() %>%
+    dplyr::mutate(
       cumsum = cumsum(n),
       pct = n / tot$n,
       cumpct = cumsum(pct)
@@ -76,7 +85,7 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE, chi_sq
 #' @rdname cpf_
 #' @export
 cpf <- function(data, ..., wt = NULL, sort = TRUE, margin = TRUE, chi_square = FALSE, kable = FALSE) {
-  cpf_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, margin = margin, chi_square = chi_square, kable = kable)
+  cpf_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, distinct = distinct, margin = margin, chi_square = chi_square, kable = kable)
 }
 
 

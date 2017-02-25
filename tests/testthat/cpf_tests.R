@@ -22,6 +22,14 @@ cpf(mtcars, gear, cyl, margin = TRUE)
 cpf(mtcars, gear, cyl, margin = FALSE)
 
 
+# Use case: say you have productName and productSKU, with a 1:many mapping
+# cpf(data, productName) essentially weights name frequencies by counts of unique productSKUs
+# cpf(data, productName, distinct = TRUE) ...
+dup(mtcars, gear, cyl)
+cpf(mtcars, gear, cyl, wt = "carb", distinct = FALSE)
+cpf(mtcars, gear, cyl, wt = "carb", distinct = TRUE)
+
+
 data("Theoph")
 cpf_(Theoph, "Dose")
 
