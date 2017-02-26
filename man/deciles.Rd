@@ -5,9 +5,9 @@
 \alias{icosatiles}
 \title{Deciles and icosatiles}
 \usage{
-deciles(x)
+deciles(x, na.rm = TRUE)
 
-icosatiles(x)
+icosatiles(x, na.rm = TRUE)
 }
 \arguments{
 \item{x}{Numeric vector}

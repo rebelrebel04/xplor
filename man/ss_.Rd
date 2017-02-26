@@ -5,17 +5,11 @@
 \alias{ss_}
 \title{\strong{S}ummary \strong{S}tatistics Table}
 \usage{
-ss_(data, ..., .dots, funs = list(Min = min, P10 = function(x, na.rm = FALSE)
-  deciles(x)[2], Mean = mean, Median = median, P90 = function(x, na.rm = FALSE)
-  deciles(x)[10], Max = max, SD = sd, CV = function(x, na.rm = FALSE) sd(x,
-  na.rm = na.rm)/mean(x, na.rm = na.rm)), na.rm = TRUE, kable = FALSE,
-  digits = 2, plot = FALSE)
+ss_(data, ..., .dots, funs = summary_funs(), kable = FALSE, digits = 2,
+  plot = FALSE)
 
-ss(data, ..., funs = list(Min = min, P10 = function(x, na.rm = FALSE)
-  deciles(x)[2], Mean = mean, Median = median, P90 = function(x, na.rm = FALSE)
-  deciles(x)[10], Max = max, SD = sd, CV = function(x, na.rm = FALSE) sd(x,
-  na.rm = na.rm)/mean(x, na.rm = na.rm)), na.rm = TRUE, kable = FALSE,
-  digits = 2, plot = FALSE)
+ss(data, ..., funs = summary_funs(), kable = FALSE, digits = 2,
+  plot = FALSE)
 }
 \arguments{
 \item{data}{A dataframe.}
@@ -24,9 +18,7 @@ ss(data, ..., funs = list(Min = min, P10 = function(x, na.rm = FALSE)
 
 \item{.dots}{Quoted names of numeric variables to summarize (SE).}
 
-\item{funs}{List of summary functions (each must have a signature with first argument being a numeric vector and including a named \code{na.rm} argument).}
-
-\item{na.rm}{Logical, whether to omit \code{NA} values from vectors when computing summary functions.}
+\item{funs}{List of summary functions defined as formulas on \code{x}.}
 
 \item{kable}{Logical, whether to return a \code{kable} for rendering in Rmarkdown.}
 

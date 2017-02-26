@@ -5,20 +5,26 @@
 \alias{cpf_}
 \title{\strong{C}umulative \strong{P}ercentile \strong{F}requency Table}
 \usage{
-cpf_(data, ..., .dots, wt = NULL, sort = TRUE, kable = FALSE)
+cpf_(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE,
+  chi_square = FALSE, kable = FALSE)
 
-cpf(data, ..., wt = NULL, sort = TRUE, kable = FALSE)
+cpf(data, ..., wt = NULL, sort = TRUE, margin = TRUE,
+  chi_square = FALSE, kable = FALSE)
 }
 \arguments{
 \item{data}{A dataframe.}
 
-\item{...}{Bare variable names defining table groupings.}
+\item{...}{Variable names defining table groupings.}
 
-\item{.dots}{Quoted variable names defining table groupings.}
+\item{.dots}{Vector of variable names defining table groupings.}
 
-\item{wt}{(Optional) quoted variable name to use for weighting frequencies.}
+\item{wt}{(Optional, character) variable name to use for weighting frequencies.}
 
 \item{sort}{Logical, whether to sort table in descending frequency.}
+
+\item{margin}{Logical, whether to add total row to end of table.}
+
+\item{chi_square}{Logical, whether to print chi-square test (has no effect on one-dimensional tables).}
 
 \item{kable}{Logical, whether to format table for Rmarkdown.}
 }
