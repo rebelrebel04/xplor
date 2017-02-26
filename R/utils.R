@@ -1,13 +1,28 @@
 
+#' Convert Numeric to Quantile-Split Factor
+#'
+#' @param x Numeric vector which is to be converted to a factor by splitting into quantiles.
+#' @param quantiles Integer number of quantiles desired (3 = tertiles, 4 = quartiles, etc.).
+#' @param labels Character vector of labels for the levels of the resulting category. By default, labels are constructed by converting the quantile integer codes to a character vector. If labels = FALSE, simple integer codes are returned instead of a factor.
+#' @param na.rm Logical, if \code{TRUE} any \code{NA} and \code{NaN}s are removed from \code{x} before the quantiles are computed.
+#' @inheritParams base::quantile
+#' @return A \code{factor} is returned, unless \code{labels = FALSE} which results in an integer vector of level codes.
+#' @export
+#' @examples
+#' table(cutQuantile(1:100, 4))
+cutQuantile <- function(x, quantiles, labels = paste(1:quantiles), na.rm = FALSE, type = 7) {
+  cut(x, breaks = quantile(x, seq(0, 1, length = quantiles+1), type = type, na.rm = na.rm), include.lowest = TRUE, labels = labels)
+}
+
+
 
 #' Deciles and icosatiles
 #'
-#' @param x Numeric vector
+#' @param x Numeric vector.
+#' @param na.rm Logical, whether to remove \code{NA} values.
 #'
 #' @return Numeric vector of specified quantiles.
 #' @export
-#'
-#' @examples
 #' data(mtcars)
 #' deciles(mtcars$hp)
 #' icosatiles(mtcars$disp)
@@ -114,4 +129,96 @@ cleanKey <- function(key, also_drop = NULL, to_na = "") {
 
 
 
+
+
+
+#' Find names in dataframe matching regex pattern
+#'
+#' @param .data The data frame to search.
+#' @param pattern The regex pattern to match against variable names in \code{.data}.
+#' @return Character vector of variable names in \code{.data} matching regex \code{pattern}.
+#' @export
+#' @examples
+#' d = data.frame(x1 = runif(10), y2 = runif(10))
+#' matchNames(d, "x")
+#' d[matchNames(d, "x")]
+matchNames <- function(.data, pattern, ignore.case = TRUE) {
+  names(.data)[grep(pattern, names(.data), ignore.case = ignore.case)]
+}
+
+
+
+#///todo: rewrite so this returns the indices of all elements that match any of NA, Inf, or NaN -- more useful this way (e.g., replacing all at once)
+#' Check dataframe for variables with \code{NA}, \code{Inf}, or \code{NaN} values.
+#'
+#' @param .data The data frame to check.
+#' @return \code{summary} of all variables in \code{.data} containing one or more invalid values.
+#' @export
+#' @examples
+#' set.seed(1234)
+#' d = data.frame(w = rnorm(100), x = sample(c(1:10,NA), 100, TRUE), y = c(1:99,Inf), z = c(NaN,2:100), a = sample(LETTERS,100,TRUE))
+#' hasNA(d)
+hasNA <- function(.data) {
+  summary(
+    .data[sapply(.data, function(x) any(is.na(x) | is.infinite(x) | is.nan(x)))]
+  )
+}
+
+
+
+
+
+# Infix operators ####
+
+#' #' Regex-Matching Infix Operator
+#' #'
+#' #' Infix operator that returns a logical vector identifying the elements of \code{x} matching the regular expression \code{pattern}. Ignores case.
+#' #' @param x Character vector to search for matches.
+#' #' @param pattern String giving the regex pattern to match.
+#' #'
+#' #' @return Logical vector of elements in \code{x} matching regex \code{pattern}.
+#' #' @export
+#' #' @examples
+#' #' c("abc", "def", "a1c", "abcd") %=~% "^a.*c$"
+#' #'
+#' #' d = data.frame(x = c(LETTERS, 0:9), stringsAsFactors = FALSE)
+#' #' dplyr::filter(d, x %=~% "\\d")
+#' `%=~%` <- function(x, pattern) {
+#'   grepl(pattern, x, ignore.case = TRUE)
+#' }
+#'
+#'
+#' #' Regex-Non-Matching Infix Operator
+#' #'
+#' #' Infix operator that returns a logical vector identifying the elements of \code{x} \strong{NOT} matching the regular expression \code{pattern}. Ignores case.
+#' #'
+#' #' @param x Character vector to search for matches.
+#' #' @param pattern String giving the regex pattern to NOT match.
+#' #' @return Logical vector of elements in \code{x} NOT matching regex \code{pattern}.
+#' #' @export
+#' #' @examples
+#' #' c("abc", "def", "a1c", "abcd") %^~% "^a.*c$"
+#' #'
+#' #' d = data.frame(x = c(LETTERS, 0:9), stringsAsFactors = FALSE)
+#' #' dplyr::filter(d, x %^~% "\\d")
+#' `%^~%` <- function(x, pattern) {
+#'   !grepl(pattern, x, ignore.case = TRUE)
+#' }
+
+
+#' Concatenation Infix Operator (Ignores NA)
+#'
+#' Infix operator for simple concatenation. Elements are concatenated without a seperator. \code{NA} values are ignored rather than pasted as literals (the default \code{paste} behavior).
+#'
+#' @inheritParams base::paste0
+#' @return A string equal to the concatenation of \code{...}.
+#' @export
+#' @examples
+#' "Timestamp: " %&% Sys.time()
+#' c(1,2) %&% c("a","b")
+`%&%` <- function(...) {
+  dots <- as.character(list(...))
+  paste0(gsub("NA", "", dots), collapse = collapse)
+  #paste0(..., sep = "")
+}
 
