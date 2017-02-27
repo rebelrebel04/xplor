@@ -102,7 +102,7 @@ lunq <- function(x, missing_values = c("", NA)) {
 #'
 #' @return Character vector, a modified version of \code{key}.
 #' @export
-cleanKey <- function(key, also_drop = NULL, to_na = "") {
+cleanKey <- function(key, also_drop = NULL, to_na = "^$") {
   key_clean <- as.character(key)
   if (!is.null(also_drop))
     key_clean <- gsub(also_drop, "", key_clean)
