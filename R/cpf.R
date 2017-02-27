@@ -85,7 +85,7 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE, chi_sq
 #' @rdname cpf_
 #' @export
 cpf <- function(data, ..., wt = NULL, sort = TRUE, margin = TRUE, chi_square = FALSE, kable = FALSE) {
-  cpf_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, distinct = distinct, margin = margin, chi_square = chi_square, kable = kable)
+  cpf_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, margin = margin, chi_square = chi_square, kable = kable)
 }
 
 
