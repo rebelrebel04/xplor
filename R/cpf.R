@@ -1,11 +1,15 @@
 
 #' \strong{C}umulative \strong{P}ercentile \strong{F}requency Table
 #'
+#' \code{cpf} produces a frequency table by the specified variables, which should be categorical and of relatively low cardinality.
+#'
+#' \code{has} is a wrapper around \code{cpf} for the common pattern of counting the number of \code{NA} and non-\code{NA} values in each specified variable. It is equivalent to \code{cpf(data, !is.na(x), !is.na(y), ...)}.
+#'
 #' @param data A dataframe.
 #' @param ... Variable names defining table groupings.
 #' @param .dots Vector of variable names defining table groupings.
 #' @param wt (Optional, character) variable name to use for weighting frequencies.
-#' @param sort Logical, whether to sort table in descending frequency.
+#' @param sort Logical, whether to sort table in descending frequency. Setting to \code{FALSE} will sort table alphabetically by grouping variables.
 #' @param margin Logical, whether to add total row to end of table.
 #' @param chi_square Logical, whether to print chi-square test (has no effect on one-dimensional tables).
 #' @param kable Logical, whether to format table for Rmarkdown.
@@ -25,18 +29,12 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE, chi_sq
 
   tbl.0 <-
     data %>%
-    #//// need to convert data.table here? as.tibble()...
     tibble::as_tibble() %>%
     # This handles a character "wt" -- otherwise for bare variable need to pass substitute(wt)
     dplyr::count_(vars = .dots, wt = wt, sort = sort)
 
   tot <- tibble::tibble(n = sum(tbl.0$n, na.rm = TRUE))
   tot$pct <- tot$n / tot$n
-
-  # tbl <- tbl.0
-  # tbl$cumsum <- cumsum(tbl$n)
-  # tbl$pct <- tbl$n / tot$n
-  # tbl$cumpct = cumsum(tbl$pct)
 
   tbl <-
     tbl.0 %>%
@@ -61,7 +59,6 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE, chi_sq
 
   if (margin)
     tbl[nrow(tbl), names(.dots)] <- "===="
-
 
   # Perform chi-square test
   if (chi_square && length(.dots) > 1) {
@@ -94,6 +91,7 @@ cpf <- function(data, ..., wt = NULL, sort = TRUE, margin = TRUE, chi_square = F
 has <- function(data, ..., wt = NULL, sort = TRUE, margin = TRUE, chi_square = FALSE, kable = FALSE) {
   has_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, margin = margin, chi_square = chi_square, kable = kable)
 }
+
 
 #' @rdname cpf_
 #' @export

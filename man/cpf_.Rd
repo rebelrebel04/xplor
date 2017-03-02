@@ -28,7 +28,7 @@ has_(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE,
 
 \item{wt}{(Optional, character) variable name to use for weighting frequencies.}
 
-\item{sort}{Logical, whether to sort table in descending frequency.}
+\item{sort}{Logical, whether to sort table in descending frequency. Setting to \code{FALSE} will sort table alphabetically by grouping variables.}
 
 \item{margin}{Logical, whether to add total row to end of table.}
 
@@ -40,7 +40,10 @@ has_(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE,
 A dataframe or \code{kable}.
 }
 \description{
-\strong{C}umulative \strong{P}ercentile \strong{F}requency Table
+\code{cpf} produces a frequency table by the specified variables, which should be categorical and of relatively low cardinality.
+}
+\details{
+\code{has} is a wrapper around \code{cpf} for the common pattern of counting the number of \code{NA} and non-\code{NA} values in each specified variable. It is equivalent to \code{cpf(data, !is.na(x), !is.na(y), ...)}.
 }
 \examples{
 data(mtcars)

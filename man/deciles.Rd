@@ -10,17 +10,14 @@ deciles(x, na.rm = TRUE)
 icosatiles(x, na.rm = TRUE)
 }
 \arguments{
-\item{x}{Numeric vector}
+\item{x}{Numeric vector.}
+
+\item{na.rm}{Logical, whether to remove \code{NA} values.}
 }
 \value{
 Numeric vector of specified quantiles.
 }
 \description{
 Deciles and icosatiles
-}
-\examples{
-data(mtcars)
-deciles(mtcars$hp)
-icosatiles(mtcars$disp)
 }
 

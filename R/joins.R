@@ -1,38 +1,68 @@
+
+
 #' Verbose Join
 #'
-#' Merge with diagnostic output.
+#' Join with diagnostic output. Joins are implemented via \code{dplyr} join functions.
 #'
 #' @param x,y Dataframes to join.
 #' @param by Character vector giving the name(s) of columns to be used for merging.
-#' @param join String specifying type of join: valid join types are "inner", "left", "right", "full".
+#' @param join String specifying type of join: valid join types are "inner", "left", "right", "full", "semi" and "anti".
+#' @param flag_source Logical, whether to add two variables (\code{.in_x} and \code{.in_y}) flagging source(s) for each case in result.
+#' @param ... Additional parameters passed to \code{dplyr} join function.
 #' @return Merged data frame.
 #' @export
 #' @examples
 #' x <- data.frame(a = LETTERS[1:10], b = 1:10, stringsAsFactors = F)
 #' y <- data.frame(a = LETTERS[6:15], c = 6:15, stringsAsFactors = F)
 #' vjoin(x, y, by = "a", join = "full")
-vjoin <- function(x, y, by, join = "left") {
+vjoin <- function(x, y, by, join = "left", flag_source = FALSE, ...) {
+
   x_by <- dplyr::select_(x, .dots = by)
   y_by <- dplyr::select_(y, .dots = by)
-  in1and2 <- nrow(dplyr::intersect(x_by, y_by))
-  in1not2 <- nrow(dplyr::setdiff(x_by, y_by))
-  in2not1 <- nrow(dplyr::setdiff(y_by, x_by))
-  message("Verbose Join (",join,"):")
-  message("|Set 1: ", nrow(x), " obs, ", ncol(x), " variables")
-  message("|Set 2: ", nrow(y), " obs, ", ncol(y), " variables")
-  message("|In 1 and 2: ", in1and2)
-  message("|In 1 not 2: ", in1not2)
-  message("|In 2 not 1: ", in2not1)
-  d <- switch(
-    join,
-    inner = merge(x, y, by, all = F),
-    left = merge(x, y, by, all.x = T, all.y = F),
-    right = merge(x, y, by, all.x = F, all.y = T),
-    full = merge(x, y, by, all = T),
-    stop(join, " is not a valid type of join in function vjoin.")
-  )
-  message("|Merged dataset: ", nrow(d), " obs, ", ncol(d), " variables")
-  invisible(d)
+
+  inxandy <- nrow(dplyr::intersect(x_by, y_by))
+  inxnoty <- nrow(dplyr::setdiff(x_by, y_by))
+  inynotx <- nrow(dplyr::setdiff(y_by, x_by))
+
+  unq_x <- nrow(unique(x_by))
+  unq_y <- nrow(unique(y_by))
+
+  # Check for duplicates in merge keys -- could create trouble
+  dups_x <- nrow(unique(as.data.frame(x_by[duplicated(x_by), ])))
+  dups_y <- nrow(unique(as.data.frame(y_by[duplicated(y_by), ])))
+  # dups_x <- sum(duplicated(x_by), na.rm = TRUE)
+  # dups_y <- sum(duplicated(y_by), na.rm = TRUE)
+
+  xnm <- deparse(substitute(x))
+  ynm <- deparse(substitute(y))
+  message(xnm," ",toupper(join)," JOIN ",ynm," ON ",paste(by, collapse = ", "))
+  message("SET ",xnm,":\t", nrow(x), " obs\t", ncol(x), " variables\t",unq_x," unique keys\t",dups_x," keys with duplicates")
+  message("SET ",ynm,":\t", nrow(y), " obs\t", ncol(y), " variables\t",unq_y," unique keys\t",dups_y," keys with duplicates")
+  message("IN ",xnm," AND ",ynm,":\t",inxandy)
+  message("IN ",xnm," NOT ",ynm,":\t",inxnoty)
+  message("IN ",ynm," NOT ",xnm,":\t",inynotx)
+
+  if (flag_source) {
+    x[[paste0(".in_",xnm)]] <- TRUE
+    y[[paste0(".in_",ynm)]] <- TRUE
+  }
+
+  # Perform join
+  fn <- get(paste0(join,"_join"), asNamespace("dplyr"))
+  m <- do.call(fn, list(x = x, y = y, by = by, ... = ...))
+
+  # Replace NAs with FALSE
+  if (flag_source) {
+    m[[paste0(".in_",xnm)]] <- ifelse(is.na(m[[paste0(".in_",xnm)]]), FALSE, TRUE)
+    m[[paste0(".in_",ynm)]] <- ifelse(is.na(m[[paste0(".in_",ynm)]]), FALSE, TRUE)
+  }
+
+  m_by <- dplyr::select_(m, .dots = by)
+  unq_m <- nrow(unique(m_by))
+  dups_m <- nrow(unique(as.data.frame(m_by[duplicated(m_by), ])))
+
+  message("Result:\t", nrow(m), " obs\t", ncol(m), " variables\t",unq_m," unique keys\t",dups_m," keys with duplicates")
+  invisible(m)
 }
 
 

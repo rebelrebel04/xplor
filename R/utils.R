@@ -23,9 +23,6 @@ cutQuantile <- function(x, quantiles, labels = paste(1:quantiles), na.rm = FALSE
 #'
 #' @return Numeric vector of specified quantiles.
 #' @export
-#' data(mtcars)
-#' deciles(mtcars$hp)
-#' icosatiles(mtcars$disp)
 deciles <- function(x, na.rm = TRUE) {
   quantile(x, seq(0, 1, .1), na.rm = na.rm)
 }
@@ -206,19 +203,19 @@ hasNA <- function(.data) {
 #' }
 
 
-#' Concatenation Infix Operator (Ignores NA)
-#'
-#' Infix operator for simple concatenation. Elements are concatenated without a seperator. \code{NA} values are ignored rather than pasted as literals (the default \code{paste} behavior).
-#'
-#' @inheritParams base::paste0
-#' @return A string equal to the concatenation of \code{...}.
-#' @export
-#' @examples
-#' "Timestamp: " %&% Sys.time()
-#' c(1,2) %&% c("a","b")
-`%&%` <- function(...) {
-  dots <- as.character(list(...))
-  paste0(gsub("NA", "", dots), collapse = collapse)
-  #paste0(..., sep = "")
-}
+#' #' Concatenation Infix Operator (Ignores NA)
+#' #'
+#' #' Infix operator for simple concatenation. Elements are concatenated without a seperator. \code{NA} values are ignored rather than pasted as literals (the default \code{paste} behavior).
+#' #'
+#' #' @inheritParams base::paste0
+#' #' @return A string equal to the concatenation of \code{...}.
+#' #' @export
+#' #' @examples
+#' #' "Timestamp: " %&% Sys.time()
+#' #' c(1,2) %&% c("a","b")
+#' `%&%` <- function(...) {
+#'   dots <- as.character(list(...))
+#'   paste0(gsub("NA", "", dots), collapse = collapse)
+#'   #paste0(..., sep = "")
+#' }
 

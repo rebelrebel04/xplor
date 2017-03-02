@@ -4,7 +4,7 @@
 \alias{cleanKey}
 \title{Standard cleaning of merge keys}
 \usage{
-cleanKey(key, also_drop = NULL, to_na = "")
+cleanKey(key, also_drop = NULL, to_na = "^$")
 }
 \arguments{
 \item{key}{Vector of keys to clean; coerced to character.}
