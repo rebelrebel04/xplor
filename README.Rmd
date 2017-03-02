@@ -148,3 +148,19 @@ data(sleep)
 findGrain(sleep, group, ID)
 ```
 
+### vjoin
+
+Verbose join wrapper around `dplyr` join functions to provide diagnostic output. Joined result is returned invisibly.
+
+```{r}
+a <- mtcars[1:10, c("hp", "mpg", "disp")]
+b <- mtcars[11:15, c("hp", "cyl")]
+vjoin(a, b, "hp")
+```
+
+Match rates can be weighted:
+
+```{r}
+vjoin(a, b, "hp", wt = "disp")
+```
+

@@ -8,6 +8,7 @@
 #' @param by Character vector giving the name(s) of columns to be used for merging.
 #' @param join String specifying type of join: valid join types are "inner", "left", "right", "full", "semi" and "anti".
 #' @param flag_source Logical, whether to add two variables (\code{.in_x} and \code{.in_y}) flagging source(s) for each case in result.
+#' @param wt Optional weighting variable (as character) used weight match rate diagnostics.
 #' @param ... Additional parameters passed to \code{dplyr} join function.
 #' @return Merged data frame.
 #' @export
@@ -15,7 +16,7 @@
 #' x <- data.frame(a = LETTERS[1:10], b = 1:10, stringsAsFactors = F)
 #' y <- data.frame(a = LETTERS[6:15], c = 6:15, stringsAsFactors = F)
 #' vjoin(x, y, by = "a", join = "full")
-vjoin <- function(x, y, by, join = "left", flag_source = FALSE, ...) {
+vjoin <- function(x, y, by, join = "left", wt = NULL, flag_source = FALSE, ...) {
 
   x_by <- dplyr::select_(x, .dots = by)
   y_by <- dplyr::select_(y, .dots = by)
@@ -38,30 +39,36 @@ vjoin <- function(x, y, by, join = "left", flag_source = FALSE, ...) {
   message(xnm," ",toupper(join)," JOIN ",ynm," ON ",paste(by, collapse = ", "))
   message("SET ",xnm,":\t", nrow(x), " obs\t", ncol(x), " variables\t",unq_x," unique keys\t",dups_x," keys with duplicates")
   message("SET ",ynm,":\t", nrow(y), " obs\t", ncol(y), " variables\t",unq_y," unique keys\t",dups_y," keys with duplicates")
-  message("IN ",xnm," AND ",ynm,":\t",inxandy)
-  message("IN ",xnm," NOT ",ynm,":\t",inxnoty)
-  message("IN ",ynm," NOT ",xnm,":\t",inynotx)
+  message("KEYS IN ",xnm," AND ",ynm,":\t",inxandy)
+  message("KEYS IN ",xnm," NOT ",ynm,":\t",inxnoty)
+  message("KEYS IN ",ynm," NOT ",xnm,":\t",inynotx)
 
-  if (flag_source) {
-    x[[paste0(".in_",xnm)]] <- TRUE
-    y[[paste0(".in_",ynm)]] <- TRUE
-  }
+  # Flag data sources per case
+  x[[paste0(".in_",xnm)]] <- TRUE
+  y[[paste0(".in_",ynm)]] <- TRUE
 
   # Perform join
   fn <- get(paste0(join,"_join"), asNamespace("dplyr"))
   m <- do.call(fn, list(x = x, y = y, by = by, ... = ...))
 
   # Replace NAs with FALSE
-  if (flag_source) {
-    m[[paste0(".in_",xnm)]] <- ifelse(is.na(m[[paste0(".in_",xnm)]]), FALSE, TRUE)
-    m[[paste0(".in_",ynm)]] <- ifelse(is.na(m[[paste0(".in_",ynm)]]), FALSE, TRUE)
-  }
+  m[[paste0(".in_",xnm)]] <- ifelse(is.na(m[[paste0(".in_",xnm)]]), FALSE, TRUE)
+  m[[paste0(".in_",ynm)]] <- ifelse(is.na(m[[paste0(".in_",ynm)]]), FALSE, TRUE)
 
   m_by <- dplyr::select_(m, .dots = by)
   unq_m <- nrow(unique(m_by))
   dups_m <- nrow(unique(as.data.frame(m_by[duplicated(m_by), ])))
 
   message("Result:\t", nrow(m), " obs\t", ncol(m), " variables\t",unq_m," unique keys\t",dups_m," keys with duplicates")
+  message("Match Table ",ifelse(is.null(wt), "(unweighted)", paste0("(weighted by ",wt,")")),":")
+  print(cpf_(m, paste0(".in_",xnm), paste0(".in_",ynm), wt = wt, kable = FALSE))
+
+  # Remove source flags if not requested
+  if (!flag_source) {
+    m[[paste0(".in_",xnm)]] <- NULL
+    m[[paste0(".in_",ynm)]] <- NULL
+  }
+
   invisible(m)
 }
 

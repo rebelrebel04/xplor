@@ -4,7 +4,7 @@
 \alias{vjoin}
 \title{Verbose Join}
 \usage{
-vjoin(x, y, by, join = "left", flag_source = FALSE)
+vjoin(x, y, by, join = "left", wt = NULL, flag_source = FALSE, ...)
 }
 \arguments{
 \item{x, y}{Dataframes to join.}
@@ -13,7 +13,11 @@ vjoin(x, y, by, join = "left", flag_source = FALSE)
 
 \item{join}{String specifying type of join: valid join types are "inner", "left", "right", "full", "semi" and "anti".}
 
+\item{wt}{Optional weighting variable (as character) used weight match rate diagnostics.}
+
 \item{flag_source}{Logical, whether to add two variables (\code{.in_x} and \code{.in_y}) flagging source(s) for each case in result.}
+
+\item{...}{Additional parameters passed to \code{dplyr} join function.}
 }
 \value{
 Merged data frame.

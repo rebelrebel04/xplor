@@ -124,6 +124,7 @@ mtcars.na <- mtcars
 set.seed(1234)
 mtcars.na[runif(10, 1, nrow(mtcars.na)), "gear"] <- NA
 mtcars.na[runif(5, 1, nrow(mtcars.na)), "cyl"] <- NA
+
 has(mtcars.na, gear, cyl, carb, kable = TRUE)
 ```
 
@@ -135,7 +136,7 @@ has(mtcars.na, gear, cyl, carb, kable = TRUE)
 | ====      | ====     | ====      |   32|      NA|  100%|      NA|
 
 ``` r
-# Equivalent to:
+# This is equivalent to:
 # cpf(mtcars.na, has_gear = is.na(gear), has_cyl = is.na(cyl), has_carb = is.na(carb), kable = TRUE)
 ```
 
@@ -257,4 +258,44 @@ findGrain(sleep, group, ID)
 ## 1      2 group * ID          0
 ## 2      1         ID         10
 ## 3      1      group         18
+```
+
+### vjoin
+
+Verbose join wrapper around `dplyr` join functions to provide diagnostic output. Joined result is returned invisibly.
+
+``` r
+a <- mtcars[1:10, c("hp", "mpg", "disp")]
+b <- mtcars[11:15, c("hp", "cyl")]
+vjoin(a, b, "hp")
+## a LEFT JOIN b ON hp
+## SET a:   10 obs  3 variables 8 unique keys   1 keys with duplicates
+## SET b:   5 obs   2 variables 3 unique keys   1 keys with duplicates
+## KEYS IN a AND b: 1
+## KEYS IN a NOT b: 7
+## KEYS IN b NOT a: 2
+## Result:  10 obs  6 variables 8 unique keys   1 keys with duplicates
+## Match Table (unweighted):
+##   .in_a .in_b  n cumsum  pct cumpct
+## 1  TRUE FALSE  9      9  90%    90%
+## 2  TRUE  TRUE  1     10  10%   100%
+## 3  ====  ==== 10     NA 100%     NA
+```
+
+Match rates can be weighted:
+
+``` r
+vjoin(a, b, "hp", wt = "disp")
+## a LEFT JOIN b ON hp
+## SET a:   10 obs  3 variables 8 unique keys   1 keys with duplicates
+## SET b:   5 obs   2 variables 3 unique keys   1 keys with duplicates
+## KEYS IN a AND b: 1
+## KEYS IN a NOT b: 7
+## KEYS IN b NOT a: 2
+## Result:  10 obs  6 variables 8 unique keys   1 keys with duplicates
+## Match Table (weighted by disp):
+##   .in_a .in_b     n cumsum  pct cumpct
+## 1  TRUE FALSE 1,918  1,918  92%    92%
+## 2  TRUE  TRUE   168  2,086   8%   100%
+## 3  ====  ==== 2,086     NA 100%     NA
 ```
