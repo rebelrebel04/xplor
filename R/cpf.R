@@ -85,8 +85,24 @@ cpf_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE, chi_sq
 #' @rdname cpf_
 #' @export
 cpf <- function(data, ..., wt = NULL, sort = TRUE, margin = TRUE, chi_square = FALSE, kable = FALSE) {
-  cpf_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, distinct = distinct, margin = margin, chi_square = chi_square, kable = kable)
+  cpf_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, margin = margin, chi_square = chi_square, kable = kable)
 }
 
 
+#' @rdname cpf_
+#' @export
+has <- function(data, ..., wt = NULL, sort = TRUE, margin = TRUE, chi_square = FALSE, kable = FALSE) {
+  has_(data, .dots = lazyeval::lazy_dots(...), wt = wt, sort = sort, margin = margin, chi_square = chi_square, kable = kable)
+}
 
+#' @rdname cpf_
+#' @export
+has_ <- function(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE, chi_square = FALSE, kable = FALSE) {
+
+  .dots <- lazyeval::all_dots(.dots, ..., all_named = TRUE)
+
+  new_f <- paste0("!is.na(",names(.dots),")")
+  names(new_f) <- paste0("has_", names(.dots))
+
+  cpf_(data, .dots = new_f, wt = wt, sort = sort, margin = margin, chi_square = chi_square, kable = kable)
+}

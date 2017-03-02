@@ -98,3 +98,10 @@ table(C.0$tx2_type, useNA = "ifany")
 cpf(C.0, inUS > 0)
 
 
+
+# has tests ####
+has(mtcars, gear, cyl)
+
+mtcars.na <- mtcars
+mtcars.na[10:20, c("gear","cyl")] <- NA
+has(mtcars.na, gear, cyl)

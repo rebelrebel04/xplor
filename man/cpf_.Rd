@@ -3,12 +3,20 @@
 \name{cpf_}
 \alias{cpf}
 \alias{cpf_}
+\alias{has}
+\alias{has_}
 \title{\strong{C}umulative \strong{P}ercentile \strong{F}requency Table}
 \usage{
 cpf_(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE,
   chi_square = FALSE, kable = FALSE)
 
 cpf(data, ..., wt = NULL, sort = TRUE, margin = TRUE,
+  chi_square = FALSE, kable = FALSE)
+
+has(data, ..., wt = NULL, sort = TRUE, margin = TRUE,
+  chi_square = FALSE, kable = FALSE)
+
+has_(data, ..., .dots, wt = NULL, sort = TRUE, margin = TRUE,
   chi_square = FALSE, kable = FALSE)
 }
 \arguments{

@@ -19,7 +19,7 @@ Core Functions
 
 ### cpf
 
-Create fast **c**umulative **p**ercentile/**f**requency tables with `cpf`. The most common use case is interactive crosstabs (though note that the output frequency table is always in long format).
+Create **c**umulative **p**ercentile/**f**requency tables with `cpf`. The most common use case is interactive crosstabs (though note that the output frequency table is always in long format).
 
 ``` r
 data(mtcars)
@@ -81,8 +81,8 @@ cpf(mtcars, cyl > 4, hp > 123, chi_square = TRUE)
 ##  Chisq = 15, df = 1, p-value = 0.00012
 ##   cyl > 4 hp > 123  n cumsum  pct cumpct
 ## 1    TRUE     TRUE 15     15  47%    47%
-## 2   FALSE    FALSE 11     11  34%    34%
-## 3    TRUE    FALSE  6     21  19%    66%
+## 2   FALSE    FALSE 11     26  34%    81%
+## 3    TRUE    FALSE  6     32  19%   100%
 ## 4    ====     ==== 32     NA 100%     NA
 ```
 
@@ -104,15 +104,39 @@ vars <- names(mtcars)[grepl("^c", names(mtcars))]
 cpf_(mtcars, .dots = vars)
 ##     cyl carb  n cumsum  pct cumpct
 ## 1     4    2  6      6  19%    19%
-## 2     8    4  6      6  19%    19%
-## 3     4    1  5     11  16%    34%
-## 4     6    4  4      4  12%    12%
-## 5     8    2  4     10  12%    31%
-## 6     8    3  3     13   9%    41%
-## 7     6    1  2      6   6%    19%
-## 8     6    6  1      7   3%    22%
-## 9     8    8  1     14   3%    44%
+## 2     8    4  6     12  19%    38%
+## 3     4    1  5     17  16%    53%
+## 4     6    4  4     21  12%    66%
+## 5     8    2  4     25  12%    78%
+## 6     8    3  3     28   9%    88%
+## 7     6    1  2     30   6%    94%
+## 8     6    6  1     31   3%    97%
+## 9     8    8  1     32   3%   100%
 ## 10 ==== ==== 32     NA 100%     NA
+```
+
+### has
+
+`has` is a wrapper around the common pattern of using `cpf` to cross-tab missing value (`NA`) counts across multiple dimensions:
+
+``` r
+mtcars.na <- mtcars
+set.seed(1234)
+mtcars.na[runif(10, 1, nrow(mtcars.na)), "gear"] <- NA
+mtcars.na[runif(5, 1, nrow(mtcars.na)), "cyl"] <- NA
+has(mtcars.na, gear, cyl, carb, kable = TRUE)
+```
+
+| has\_gear | has\_cyl | has\_carb |    n|  cumsum|   pct|  cumpct|
+|:----------|:---------|:----------|----:|-------:|-----:|-------:|
+| TRUE      | TRUE     | TRUE      |   19|      19|   59%|     59%|
+| FALSE     | TRUE     | TRUE      |    8|      27|   25%|     84%|
+| TRUE      | FALSE    | TRUE      |    5|      32|   16%|    100%|
+| ====      | ====     | ====      |   32|      NA|  100%|      NA|
+
+``` r
+# Equivalent to:
+# cpf(mtcars.na, has_gear = is.na(gear), has_cyl = is.na(cyl), has_carb = is.na(carb), kable = TRUE)
 ```
 
 ### ss
@@ -123,7 +147,7 @@ Produce a quick table of **s**ummary **s**tatistics with `ss`. The function acce
 ss(mtcars, plot = TRUE, kable = TRUE)
 ```
 
-![](README-unnamed-chunk-10-1.png)
+![](README-unnamed-chunk-11-1.png)
 
 | Variable |    N|  NAs|    Min|    P10|    Mean|  Median|     P90|     Max|      SD|    CV|
 |:---------|----:|----:|------:|------:|-------:|-------:|-------:|-------:|-------:|-----:|
