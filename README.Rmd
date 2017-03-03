@@ -57,7 +57,7 @@ Optionally specify a weighting variable for frequencies:
 cpf(mtcars, carb, wt = "cyl")
 ```
 
-A chi-square test can be requestd for frequency tables that have two or more dimensions:
+A chi-square test can be requested for frequency tables that have two or more dimensions:
 
 ```{r}
 cpf(mtcars, cyl > 4, hp > 123, chi_square = TRUE)
@@ -110,7 +110,7 @@ A `dplyr`-grouped dataframe can be passed to produce a dimensional summary table
 library(dplyr)
 mtcars %>% 
   group_by(cyl) %>% 
-  ss(kable = TRUE)
+  ss(disp, mpg, kable = TRUE)
 ```
 
 Pass a custom list of summary functions as formulas on `x`:
