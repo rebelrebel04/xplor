@@ -3,30 +3,32 @@
 \name{dup_}
 \alias{dup}
 \alias{dup_}
-\title{Check data frame for duplicates by index(es).}
+\title{Check dataframe for duplicate keys}
 \usage{
-dup_(data, ..., .dots, verbose = FALSE)
+dup_(data, ..., .dots, wt = NULL, kable = TRUE)
 
-dup(data, ..., verbose = FALSE)
+dup(data, ..., wt = NULL, kable = TRUE)
 }
 \arguments{
-\item{...}{Bare variable names whose values are to be checked for duplication.}
+\item{...}{Variable names whose values are to be checked for duplication.}
 
 \item{.dots}{Quoted variable names whose values are to be checked for duplication.}
 
-\item{verbose}{If \code{TRUE}, will print all duplicated cases in \code{data}.}
+\item{wt}{Optional weighting variable (as character) used to weight duplication rate diagnostics.}
 
-\item{.data}{The data frame to check for duplicate cases, where duplication is specific to the variables listed in \code{...}.}
+\item{kable}{Logical, whether to format table for Rmarkdown.}
+
+\item{.data}{The dataframe to check for duplicate cases, where duplication is specific to the variables listed in \code{...}.}
 }
 \value{
 Invisible dataframe of duplicated cases.
 }
 \description{
-Check data frame for duplicates by index(es).
+Check dataframe for duplicate keys
 }
 \examples{
 d = data.frame(x = rep(1:10, 2), y = rep(1:5, 4), z = 1:20, a = c(1:15, 1:5))
-dup(d, y, a, verbose = T)
+dup(d, y, a)
 
 #SE version
 dup_(d, .dots = c("y", "a"))

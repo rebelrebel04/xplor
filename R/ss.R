@@ -28,7 +28,7 @@ ss_ <- function(
   .dots <- lazyeval::all_dots(.dots, ..., all_named = TRUE)
 
   # convert data.tables?
-  # data <- as.data.frame(data, stringsAsFactors = FALSE)
+  data <- as.data.frame(data, stringsAsFactors = FALSE)
 
   # Select requested columns if specified -- otherwise will use all numeric columns in data
   if (length(.dots) > 0) {

@@ -128,6 +128,28 @@ mtcars %>%
 ```
 
 
+### dup
+
+Check for duplicate cases in a dataframe with `dup`:
+
+```{r}
+dup(mtcars, gear, cyl)
+```
+
+`dup` invisibly returns the original dataframe filtered to duplicate rows, with a variable `.n` attached indicating the number of duplicates:
+
+```{r}
+print(dup(mtcars, disp))
+```
+
+A weight can be supplied to generate weighted duplication rates. This can be useful to determine if duplication is limited to low-frequency cases when weighting by a separate frequency variable:
+
+```{r}
+dup(mtcars, disp, wt = "mpg")
+```
+
+
+
 ### mapping
 
 For dimensions `x` and `y` in a dataset, there may be only one unique value of `y` associated with each unique value of `x`, or there may be multiple unique values of `y` associated with each unique value of `x`. `mapping` summarizes the association between `x` and `y` in a dataset, specified as a formula `x ~ y`:
