@@ -96,6 +96,31 @@ has(mtcars.na, gear, cyl, carb, kable = TRUE)
 ```
 
 
+
+### dup
+
+Check for duplicate cases in a dataframe with `dup`:
+
+```{r}
+dup(mtcars, gear, cyl)
+```
+
+`dup` divides cases into those with unique keys (which appear only once in the dataset) and those with non-unique keys. This varies from the `duplicated` function in base R, which only counts cases as duplicates *after the first (or last) occurrence*. This is why `dup` reports the number of *unique vs. non-unique* cases by the specified keys.
+
+`dup` invisibly returns the original dataframe filtered to rows with non-unique keys, with a variable `.n` attached indicating the total number of cases with each key combination:
+
+```{r}
+print(dup(mtcars, disp))
+```
+
+A weight can be supplied to generate weighted duplication rates. This can be useful to determine if duplication is limited to low-frequency cases when weighting by a separate frequency variable:
+
+```{r}
+dup(mtcars, disp, wt = "mpg")
+```
+
+
+
 ### ss
 
 Produce a quick table of **s**ummary **s**tatistics with `ss`. The function accepts a named list of functions (specified as formulas) via the `funs` argument, with the default list covering the basics. If no variables are specified the table will summarize all numeric columns in the dataset. If `plot = TRUE` a facet-wrapped plot of histograms will be produced as a side-effect.
@@ -126,28 +151,6 @@ mtcars %>%
     kable = TRUE
   )
 ```
-
-
-### dup
-
-Check for duplicate cases in a dataframe with `dup`:
-
-```{r}
-dup(mtcars, gear, cyl)
-```
-
-`dup` invisibly returns the original dataframe filtered to duplicate rows, with a variable `.n` attached indicating the number of duplicates:
-
-```{r}
-print(dup(mtcars, disp))
-```
-
-A weight can be supplied to generate weighted duplication rates. This can be useful to determine if duplication is limited to low-frequency cases when weighting by a separate frequency variable:
-
-```{r}
-dup(mtcars, disp, wt = "mpg")
-```
-
 
 
 ### mapping

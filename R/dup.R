@@ -27,18 +27,18 @@ dup_ <- function(data, ..., .dots, wt = NULL, kable = TRUE) {
     dplyr::group_by_(.dots = .dots) %>%
     dplyr::mutate(
       .n = n(),
-      .isDup = .n > 1
+      .isUnique = .n == 1
     ) %>%
     dplyr::ungroup()
 
   # Print duplication rate table
-  print(cpf(d, isDup = .isDup, wt = wt, kable = kable))
+  print(cpf(d, isUnique = .isUnique, wt = wt, kable = kable))
 
   # Return duplicated rows
   d %>%
-    dplyr::filter(.isDup) %>%
+    dplyr::filter(!.isUnique) %>%
     dplyr::arrange_("desc(.n)", .dots = .dots) %>%
-    dplyr::select(-.isDup) %>%
+    dplyr::select(-.isUnique) %>%
     invisible()
 
 }

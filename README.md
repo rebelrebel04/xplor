@@ -140,6 +140,61 @@ has(mtcars.na, gear, cyl, carb, kable = TRUE)
 # cpf(mtcars.na, has_gear = is.na(gear), has_cyl = is.na(cyl), has_carb = is.na(carb), kable = TRUE)
 ```
 
+### dup
+
+Check for duplicate cases in a dataframe with `dup`:
+
+``` r
+dup(mtcars, gear, cyl)
+## 
+## 
+## isUnique     n   cumsum    pct   cumpct
+## ---------  ---  -------  -----  -------
+## FALSE       30       30    94%      94%
+## TRUE         2       32     6%     100%
+## ====        32       NA   100%       NA
+```
+
+`dup` divides cases into those with unique keys (which appear only once in the dataset) and those with non-unique keys. This varies from the `duplicated` function in base R, which only counts cases as duplicates *after the first (or last) occurrence*. This is why `dup` reports the number of *unique vs. non-unique* cases by the specified keys.
+
+`dup` invisibly returns the original dataframe filtered to rows with non-unique keys, with a variable `.n` attached indicating the total number of cases with each key combination:
+
+``` r
+print(dup(mtcars, disp))
+## 
+## 
+## isUnique     n   cumsum    pct   cumpct
+## ---------  ---  -------  -----  -------
+## TRUE        23       23    72%      72%
+## FALSE        9       32    28%     100%
+## ====        32       NA   100%       NA
+## # A tibble: 9 × 12
+##     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb    .n
+##   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <int>
+## 1  16.4     8 275.8   180  3.07 4.070 17.40     0     0     3     3     3
+## 2  17.3     8 275.8   180  3.07 3.730 17.60     0     0     3     3     3
+## 3  15.2     8 275.8   180  3.07 3.780 18.00     0     0     3     3     3
+## 4  21.0     6 160.0   110  3.90 2.620 16.46     0     1     4     4     2
+## 5  21.0     6 160.0   110  3.90 2.875 17.02     0     1     4     4     2
+## 6  19.2     6 167.6   123  3.92 3.440 18.30     1     0     4     4     2
+## 7  17.8     6 167.6   123  3.92 3.440 18.90     1     0     4     4     2
+## 8  18.7     8 360.0   175  3.15 3.440 17.02     0     0     3     2     2
+## 9  14.3     8 360.0   245  3.21 3.570 15.84     0     0     3     4     2
+```
+
+A weight can be supplied to generate weighted duplication rates. This can be useful to determine if duplication is limited to low-frequency cases when weighting by a separate frequency variable:
+
+``` r
+dup(mtcars, disp, wt = "mpg")
+## 
+## 
+## isUnique      n   cumsum    pct   cumpct
+## ---------  ----  -------  -----  -------
+## TRUE        482      482    75%      75%
+## FALSE       161      643    25%     100%
+## ====        643       NA   100%       NA
+```
+
 ### ss
 
 Produce a quick table of **s**ummary **s**tatistics with `ss`. The function accepts a named list of functions (specified as formulas) via the `funs` argument, with the default list covering the basics. If no variables are specified the table will summarize all numeric columns in the dataset. If `plot = TRUE` a facet-wrapped plot of histograms will be produced as a side-effect.
@@ -148,7 +203,7 @@ Produce a quick table of **s**ummary **s**tatistics with `ss`. The function acce
 ss(mtcars, plot = TRUE, kable = TRUE)
 ```
 
-![](README-unnamed-chunk-11-1.png)
+![](README-unnamed-chunk-14-1.png)
 
 | Variable |    N|  NAs|    Min|    P10|    Mean|  Median|     P90|     Max|      SD|    CV|
 |:---------|----:|----:|------:|------:|-------:|-------:|-------:|-------:|-------:|-----:|
@@ -209,59 +264,6 @@ mtcars %>%
 | am       |      0.25|      0.38|      1.15|
 | gear     |      0.54|      0.55|      2.06|
 | carb     |      2.61|      1.10|      4.54|
-
-### dup
-
-Check for duplicate cases in a dataframe with `dup`:
-
-``` r
-dup(mtcars, gear, cyl)
-## 
-## 
-## isDup     n   cumsum    pct   cumpct
-## ------  ---  -------  -----  -------
-## TRUE     30       30    94%      94%
-## FALSE     2       32     6%     100%
-## ====     32       NA   100%       NA
-```
-
-`dup` invisibly returns the original dataframe filtered to duplicate rows, with a variable `.n` attached indicating the number of duplicates:
-
-``` r
-print(dup(mtcars, disp))
-## 
-## 
-## isDup     n   cumsum    pct   cumpct
-## ------  ---  -------  -----  -------
-## FALSE    23       23    72%      72%
-## TRUE      9       32    28%     100%
-## ====     32       NA   100%       NA
-## # A tibble: 9 × 12
-##     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb    .n
-##   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <int>
-## 1  16.4     8 275.8   180  3.07 4.070 17.40     0     0     3     3     3
-## 2  17.3     8 275.8   180  3.07 3.730 17.60     0     0     3     3     3
-## 3  15.2     8 275.8   180  3.07 3.780 18.00     0     0     3     3     3
-## 4  21.0     6 160.0   110  3.90 2.620 16.46     0     1     4     4     2
-## 5  21.0     6 160.0   110  3.90 2.875 17.02     0     1     4     4     2
-## 6  19.2     6 167.6   123  3.92 3.440 18.30     1     0     4     4     2
-## 7  17.8     6 167.6   123  3.92 3.440 18.90     1     0     4     4     2
-## 8  18.7     8 360.0   175  3.15 3.440 17.02     0     0     3     2     2
-## 9  14.3     8 360.0   245  3.21 3.570 15.84     0     0     3     4     2
-```
-
-A weight can be supplied to generate weighted duplication rates. This can be useful to determine if duplication is limited to low-frequency cases when weighting by a separate frequency variable:
-
-``` r
-dup(mtcars, disp, wt = "mpg")
-## 
-## 
-## isDup      n   cumsum    pct   cumpct
-## ------  ----  -------  -----  -------
-## FALSE    482      482    75%      75%
-## TRUE     161      643    25%     100%
-## ====     643       NA   100%       NA
-```
 
 ### mapping
 
