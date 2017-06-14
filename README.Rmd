@@ -23,7 +23,7 @@ Install **xplor** from github with:
 
 ```{r, eval = FALSE}
 # install.packages("devtools")
-devtools::install_github("xplor/rebelrebel04")
+devtools::install_github("rebelrebel04/xplor")
 ```
 
 ## Core Functions
@@ -99,7 +99,7 @@ has(mtcars.na, gear, cyl, carb, kable = TRUE)
 
 ### dup
 
-Check for duplicate cases in a dataframe with `dup`:
+Check for duplicate keys in a dataframe with `dup`:
 
 ```{r}
 dup(mtcars, gear, cyl)
@@ -187,5 +187,24 @@ Match rates can be weighted:
 
 ```{r}
 vjoin(a, b, "hp", wt = "disp")
+```
+
+
+
+### %&%
+
+Why does `paste(NA)` actually print "NA"?
+
+```{r}
+paste(NA)
+```
+
+I don't know, but this is one of those places where base R is kind of dumb. Besides just making concatenation easier to read, `% %` ignores NAs (silently replacing them with `""`), which is probably what you wanted R to do in the first place 99.9% of the time:
+
+```{r}
+first_names <- c("Abe", "George", "Thomas")
+middle_names <- c("J.", NA, "J.")
+last_names <- c("Lincoln", "Washington", "Jefferson")
+first_names % % middle_names % % last_names
 ```
 

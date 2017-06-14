@@ -146,20 +146,20 @@ matchNames <- function(.data, pattern, ignore.case = TRUE) {
 
 
 #///todo: rewrite so this returns the indices of all elements that match any of NA, Inf, or NaN -- more useful this way (e.g., replacing all at once)
-#' Check dataframe for variables with \code{NA}, \code{Inf}, or \code{NaN} values.
-#'
-#' @param .data The data frame to check.
-#' @return \code{summary} of all variables in \code{.data} containing one or more invalid values.
-#' @export
-#' @examples
-#' set.seed(1234)
-#' d = data.frame(w = rnorm(100), x = sample(c(1:10,NA), 100, TRUE), y = c(1:99,Inf), z = c(NaN,2:100), a = sample(LETTERS,100,TRUE))
-#' hasNA(d)
-hasNA <- function(.data) {
-  summary(
-    .data[sapply(.data, function(x) any(is.na(x) | is.infinite(x) | is.nan(x)))]
-  )
-}
+# #' Check dataframe for variables with \code{NA}, \code{Inf}, or \code{NaN} values.
+# #'
+# #' @param .data The data frame to check.
+# #' @return \code{summary} of all variables in \code{.data} containing one or more invalid values.
+# #' @export
+# #' @examples
+# #' set.seed(1234)
+# #' d = data.frame(w = rnorm(100), x = sample(c(1:10,NA), 100, TRUE), y = c(1:99,Inf), z = c(NaN,2:100), a = sample(LETTERS,100,TRUE))
+# #' hasNA(d)
+# hasNA <- function(.data) {
+#   summary(
+#     .data[sapply(.data, function(x) any(is.na(x) | is.infinite(x) | is.nan(x)))]
+#   )
+# }
 
 
 
@@ -167,55 +167,47 @@ hasNA <- function(.data) {
 
 # Infix operators ####
 
-#' #' Regex-Matching Infix Operator
-#' #'
-#' #' Infix operator that returns a logical vector identifying the elements of \code{x} matching the regular expression \code{pattern}. Ignores case.
-#' #' @param x Character vector to search for matches.
-#' #' @param pattern String giving the regex pattern to match.
-#' #'
-#' #' @return Logical vector of elements in \code{x} matching regex \code{pattern}.
-#' #' @export
-#' #' @examples
-#' #' c("abc", "def", "a1c", "abcd") %=~% "^a.*c$"
-#' #'
-#' #' d = data.frame(x = c(LETTERS, 0:9), stringsAsFactors = FALSE)
-#' #' dplyr::filter(d, x %=~% "\\d")
-#' `%=~%` <- function(x, pattern) {
-#'   grepl(pattern, x, ignore.case = TRUE)
-#' }
+
+#' Concatenation Ignoring NA
 #'
+#' Infix operators for string concatenation. \code{NA} values are ignored rather than pasted as literals (the default \code{paste} behavior).
 #'
-#' #' Regex-Non-Matching Infix Operator
-#' #'
-#' #' Infix operator that returns a logical vector identifying the elements of \code{x} \strong{NOT} matching the regular expression \code{pattern}. Ignores case.
-#' #'
-#' #' @param x Character vector to search for matches.
-#' #' @param pattern String giving the regex pattern to NOT match.
-#' #' @return Logical vector of elements in \code{x} NOT matching regex \code{pattern}.
-#' #' @export
-#' #' @examples
-#' #' c("abc", "def", "a1c", "abcd") %^~% "^a.*c$"
-#' #'
-#' #' d = data.frame(x = c(LETTERS, 0:9), stringsAsFactors = FALSE)
-#' #' dplyr::filter(d, x %^~% "\\d")
-#' `%^~%` <- function(x, pattern) {
-#'   !grepl(pattern, x, ignore.case = TRUE)
-#' }
+#' @inheritParams base::paste0
+#' @return A string equal to the concatenation of \code{...}.
+#' @export
+#' @examples
+#' "Timestamp: " %&% Sys.time()
+#' c(1,2) %&% c("a","b")
+#' "foo" %&% "bar"
+#' "foo" %&% NA
+#' NA %&% "bar"
+#' c("foo",NA) %&% "buzz"
+#' c("foo","fizz") % % c("bar","buzz") %_% 1
+concat <- function(x, y, sep) {
+  paste(
+    ifelse(is.na(x), "", x),
+    ifelse(is.na(y), "", y),
+    sep = ifelse(is.na(x) | is.na(y), "", sep)
+  )
+}
 
 
-#' #' Concatenation Infix Operator (Ignores NA)
-#' #'
-#' #' Infix operator for simple concatenation. Elements are concatenated without a seperator. \code{NA} values are ignored rather than pasted as literals (the default \code{paste} behavior).
-#' #'
-#' #' @inheritParams base::paste0
-#' #' @return A string equal to the concatenation of \code{...}.
-#' #' @export
-#' #' @examples
-#' #' "Timestamp: " %&% Sys.time()
-#' #' c(1,2) %&% c("a","b")
-#' `%&%` <- function(...) {
-#'   dots <- as.character(list(...))
-#'   paste0(gsub("NA", "", dots), collapse = collapse)
-#'   #paste0(..., sep = "")
-#' }
+#' @rdname concat
+#' @export
+`%&%` <- function(x, y) {
+  concat(x, y, "")
+}
 
+
+#' @rdname concat
+#' @export
+`%_%` <- function(x, y) {
+  concat(x, y, "_")
+}
+
+
+#' @rdname concat
+#' @export
+`% %` <- function(x, y) {
+  concat(x, y, " ")
+}

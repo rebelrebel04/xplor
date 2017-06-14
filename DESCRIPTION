@@ -8,7 +8,7 @@ Description: A package of utility functions for assisting with initial data expl
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Imports: lazyeval,
     dplyr,
     formattable,

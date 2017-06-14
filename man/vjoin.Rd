@@ -30,4 +30,3 @@ x <- data.frame(a = LETTERS[1:10], b = 1:10, stringsAsFactors = F)
 y <- data.frame(a = LETTERS[6:15], c = 6:15, stringsAsFactors = F)
 vjoin(x, y, by = "a", join = "full")
 }
-

@@ -25,4 +25,3 @@ Convert Numeric to Quantile-Split Factor
 \examples{
 table(cutQuantile(1:100, 4))
 }
-

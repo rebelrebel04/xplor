@@ -30,4 +30,3 @@ This function returns the distribution of \eqn{x -> y}, i.e., the number of uniq
 data(mtcars)
 mapping(mpg ~ cyl, mtcars)
 }
-

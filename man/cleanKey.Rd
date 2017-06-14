@@ -20,4 +20,3 @@ Character vector, a modified version of \code{key}.
 Removes all characters from \code{key} \emph{except} for alphanumerics, (internal) space, dash, and underscore. Result is trimmed of leading/trailing white space and converted to uppercase.
 Use \code{also_drop} to provide a regex pattern specifying any additional patterns to be dropped. This rule is applied prior to \code{to_na}.
 }
-

@@ -19,4 +19,3 @@ Dataframe listing the closest matches (and corresponding edit distance) for all 
 \description{
 A typical use case is aligning merge keys when key variables may be fuzzy (e.g., merging pagePath to productName).
 }
-

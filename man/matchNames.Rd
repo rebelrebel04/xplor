@@ -22,4 +22,3 @@ d = data.frame(x1 = runif(10), y2 = runif(10))
 matchNames(d, "x")
 d[matchNames(d, "x")]
 }
-

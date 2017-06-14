@@ -20,4 +20,3 @@ Numeric vector of specified quantiles.
 \description{
 Deciles and icosatiles
 }
-
